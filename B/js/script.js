@@ -3,8 +3,8 @@ class App {
 
 		this.musicList = new Array;		
 		this.nowMusic;
+		this.beMusicList = false;
 		this.playList = new Array;
-		this.playList[0] = null;
 		
 		let player= new Player(this);
 
@@ -33,7 +33,6 @@ class App {
 		//mouseEvent
 		
 		window.addEventListener("click", (e)=>{
-			if(e.target.classList[1] === 'contextmenu') return;
 			this.contextmenu.style.display = 'none';
 			
 		})
@@ -56,8 +55,8 @@ class App {
 					console.log(this.playList)
 				})
 				if(this.playList.indexOf(this.nowMusic) != -1) return;
-				if(this.playList[0] === null) this.playList[0] = this.nowMusic;
-				else this.playList.push(this.nowMusic);
+				this.playList.push(this.nowMusic)
+				this.beMusicList = true;
 			}
 		})
 		
@@ -66,7 +65,7 @@ class App {
 
 class Player { 
 	constructor(app) {
-		this.app = app
+		this.app = app;
 
 		this.coverImg = document.querySelector(".cover-img");
 		this.musicText = document.querySelector(".music-text");
@@ -74,12 +73,11 @@ class Player {
 	}
 
 	player() {
-		console.log(this.app.playList)
-		
-
-		console.log(this.app.playList[0])
-		// this.coverImg.innerHTML = `<img src="${}"></img>`
-
+		if(this.app.beMusicList) {
+			this.coverImg.innerHTML = `<img src="/B/covers/${this.app.playList[0].albumImage}"></img>`
+			this.musicText.innerHTML = `<p><span>${this.app.playList[0].name}</span><br>${this.app.playList[0].artist}</p>`
+			
+		}
 		requestAnimationFrame(e => this.player());
 	}
 	

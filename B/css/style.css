@@ -1,0 +1,211 @@
+/* first css */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body { background-color: #f8f9fa; }
+
+ol, ul { list-style: none; }
+
+a { color: #3b3a3a; text-decoration: none; }
+
+/* header */
+
+header { 
+    width: 100%; 
+    height: 120px; 
+    background-color: #f8f9fa; 
+    
+    position: fixed; 
+    
+    padding: 20px 0 0 60px; 
+    border-bottom: 2px solid rgb(255, 238, 254); 
+    z-index: 10000;
+}
+#logo { width: 5%; float: left; cursor: pointer;}
+
+/* search */
+
+.search-bar { 
+    width: 55%; 
+    height: 45px;  
+
+    margin: 0 auto; 
+    margin-top: 10px;
+    padding: 0 0 0 30px;
+    border: 2px solid #bd8cbf;
+    border-radius: 35px;
+}
+.fa-search {font-size: 1.8em; color: #535353; padding-top: 5px;}
+#search { 
+    width: 90%; 
+    height: 70%; 
+    background-color: #f8f9fa;
+
+    font-size: 18px;
+
+    margin-left: 20px; 
+    outline: none; 
+    border: none;
+} 
+
+/* nav */
+
+nav { width: 25%; height: 100%; position: fixed; top: 120px; border-right: 2px solid rgb(255, 233, 254); }
+.line { width: 8%; height: 4px; background-color: rgb(255, 91, 91); margin: 0 auto; margin-top: 25px; border-radius: 10px;}
+
+.menu-top-text { font-size: 2em; font-weight: bold; line-height: 35px; text-align: center; }
+.menu { width: 100%; height: 50%; margin-top: 30px; }
+.menu > div { width: 100%; height: 25%; font-size: 1.3em; font-weight: 600; padding: 30px 0 0 60px; } 
+.menu > div:hover { background-color: rgb(245, 179, 231); }
+.menu > div > a { width: 100%; height: 100%; }
+.menu > div > a > p { width: 100%; height: 100%; }
+
+#login-key { display: none; }
+#login-key + label { width: 100%; height: 100%; cursor: pointer;}
+#login-key:checked ~ #login-form { display: block; }
+
+#login-form {
+    width: 20%;
+    height: 40%;
+    background-color: white;
+
+    position: fixed;
+    left: 2.5%; top: 40%;
+
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,.6);
+    z-index: 1000;
+    display: none;
+}
+.login-form-title { width: 100%; height: 10%; font-size: 1.2em; text-align: center; margin-top: 10px; }
+.form-group {
+    width: 80%;
+
+    font-size: 15px;
+
+    display: flex;
+    flex-direction: column;
+
+    margin: 0 auto;
+    margin-top: 18px;
+}
+
+.form-group > label { width: 100%; margin-bottom: 10px; }
+
+.form-group > input { height: 30px; border: 2px solid #d6d6d6; }
+.form-btn {
+    height: 40px;
+
+    font-size: 17px;
+    text-align: center;
+    color: white;
+    line-height: 40px;
+
+    /* margin-top: 5px; */
+    border: none;
+    border-radius: 10px;
+    background-color: rgb(245, 179, 231);
+    cursor: pointer;
+}
+
+.thank-you {width: 100%; height: 20px; margin-top: 50px; font-weight: bold; padding-left: 30px; }
+.thank-you-line { width: 70%; height: 8px; background-color: rgb(255, 91, 91); margin-top: 10px; }
+
+/* section */
+
+section { width: 75%; height: 1000px; float: right; margin: 120px 30px 0 0; padding: 40px 0 0 80px; z-index: -1;}
+.music > p { font-size: 1.3em; font-weight: bold; }
+.music > div { 
+    width: 100%; 
+    height: 450px; 
+    
+    font-size: 1.5em; 
+    font-weight: bold; 
+    
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: 1fr;
+    grid-gap: 15px;
+}
+.music > div > div { 
+    width: 100%; 
+    height: 80%; 
+    background-color: white;
+    
+    font-size: .5em; 
+    font-weight: 500; 
+    line-height: 22px;
+
+    box-shadow: 5px 5px 7px;
+    transition: transform .5s; transform: scale(1);
+}
+.music > div > div:hover { transform: scale(1.05);}
+.music > div > div > p { padding-left: 10px; }
+.music > div > div > p > span { font-size: 1.3em; font-weight: bold; }
+.music > div > div > img { width: 100%; }
+
+.music-genre > div:last-child {
+    margin-bottom: 100px;
+}
+
+/* footer */
+
+footer { 
+    width: 75%; 
+    height: 100px; 
+    background-color: #f8f9fa;
+
+    position: fixed; 
+    left: 25%;
+    bottom: 0; 
+    
+    margin-top: 120px; 
+    padding: 15px 0 0 20px;
+    border: 2px solid rgb(255, 233, 254);
+    border-left: none;
+}
+
+.cover-img { width: 6%; float: left; }
+.cover-img > img { width: 100%; }
+.music-text { font-size: .8em; float: left; margin: 10px 0 0 10px; }
+.music-text > p > span { font-size: 1.2em; font-weight: bold; }
+
+/* music-player */
+.music-player { width: 75%; height: 100%; position: relative; float: left; margin-left: 50px;}
+.music-player-top, .music-player-bottom {
+    width: 100%;
+    height: 50%;
+    position: absolute;
+    left: 0; top: 0;
+}
+.music-player-top > i { font-size: 30px; color: rgb(255, 175, 206); cursor: pointer;}
+.fa-step-forward { margin-left: 230px; }
+.fa-play-circle { margin-left: 100px;  }
+.fa-step-backward { margin-left: 100px; }
+.fa-repeat { margin-left: 50px; }
+
+.music-player-bottom { top: 50%; }
+.view-lyrics-btn { 
+    width: 8%; 
+    height: 50%; 
+    background-color: rgb(255, 175, 206); 
+    
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 20px;
+    color: #fff;
+
+    float: left;
+    border-radius: 15px;
+}
+.now-time, .all-time { float: left; margin-left: 30px; }
+.time-bar { width: 50%; height: 5px; background-color: rgb(247, 203, 147); float: left; margin: 10px 0 0 30px;}
+.time-up-bar { width: 40%; height: 100%; background-color: rgb(255, 175, 206);}
+.sound-btn { font-size: 30px; color: rgb(255, 175, 206); margin-left: 30px;}
+#sound-set { width: 10%; }

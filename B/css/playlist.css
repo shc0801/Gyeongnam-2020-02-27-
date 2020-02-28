@@ -1,0 +1,15 @@
+section { height: 500px; }
+.music-recommendation > p { width: 28%; float: left;}
+.all-play, .add-play { 
+    width: 150px; 
+    height: 20px; 
+    
+    text-align: center;
+
+    border: 2px solid #ff8989; 
+    padding: 3px 8px;
+    cursor: pointer;
+}
+
+.all-play:hover , .add-play:hover { background-color: #ff8989; color: white; }
+.add-play { margin-left: 30px; }

@@ -9,15 +9,242 @@
 </head>
 <body>
     <header>
-        <img id="logo" src="./images/logo.png" alt="">
+        <a href="#"><img id="logo" src="./images/logo.png" alt=""></a>
         <div class="search-bar">
             <i class="fa fa-search"></i>
-            <input type="text" id="search">
+            <input type="text" id="search" placeholder="search for songs">
         </div>
     </header>
     <nav>
-        
+        <div class="line"></div>
+        <div class="menu-top-text">
+            <p>menu</p>
+        </div>
+        <div class="menu">
+            <div class="menu-logIn">
+                <input type="checkbox" id="login-key">
+                <label for="login-key">logIn</label>
+                <form id="login-form">
+                    <div class="login-form-title">
+                        LogIn
+                    </div>
+                    <div class="form-group">
+                        <label for="userid">아이디</label>
+                        <input type="text" class="form-control is-invalid" id="login-userid" name="userid">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" class="form-control is-invalid" id="login-password" name="password">
+                    </div>
+                    <div class="form-group">
+                        <a href="#" id="login-form-btn" class="form-btn">로그인</a>
+                    </div>
+                </form>
+            </div>
+            <div class="menu-HOME"><a href="index.html"><p>HOME</p></a></div>
+            <div class="menu-Library"><a href="./Library.html"><p>Library</p></a></div>
+            <div class="menu-Queue"><a href="./Queue.html"><p>Queue</p></a></div>
+        </div>
+        <div class="thank-you">
+            <p>Thank you for useing this web</p>
+        </div>
+        <div class="thank-you-line"></div>
     </nav>
-    <!-- <i class="fa fa-play-circle"></i> -->
+    <section>
+        <div class="music-recommendation music">
+            <p>추천음악</p>
+            <div>
+                <div>
+                    <img src="./covers/Fun to The World.jpg" alt="">
+                    <p><span>Fun to The World</span><br>
+                    모모랜드 (Momoland)</p>
+                </div>
+                <div>
+                    <img src="./covers/GREAT!.jpg" alt="">
+                    <p><span>GREAT</span><br>
+                    모모랜드 (Momoland)</p>
+                </div>
+                <div>
+                    <img src="./covers/Show me.jpg" alt="">
+                    <p><span>Show me</span><br>
+                    모모랜드 (Momoland)</p>
+                </div>
+                <div>
+                    <img src="./covers/FANCY YOU.jpg" alt="">
+                    <p><span>FANCY YOU</span><br>
+                    트와이스 (twice)</p>
+                </div>
+                <div>
+                    <img src="./covers/YES or YES.jpg" alt="">
+                    <p><span>YES or YES</span><br>
+                    트와이스 (twice)</p>
+                </div>
+            </div>
+        </div>
+        <div class="music-genre">
+            <div class="music-genre-ballad music">
+                <p>발라드</p>
+                <div>
+                    <div>
+                        <img src="./covers/pathos.jpg" alt="">
+                        <p><span>어디에도</span><br>
+                        [MV] M.C THE MAX(엠씨더맥스)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/180˚.jpg" alt="">
+                        <p><span>180도</span><br>
+                        벤</p>
+                    </div>
+                    <div>
+                        <img src="./covers/헤어져줘서 고마워.jpg" alt="">
+                        <p><span>헤어져줘서 고마워</span><br>
+                        벤</p>
+                    </div>
+                    <div>
+                        <img src="./covers/RECIPE.jpg" alt="">
+                        <p><span>열애중</span><br>
+                        벤</p>
+                    </div>
+                    <div>
+                        <img src="./covers/너를 만나.jpg" alt="">
+                        <p><span>너를 만나</span><br>
+                            폴킴</p>
+                    </div>
+                </div>
+            </div>
+            <div class="music-genre-rap music">
+                <p>힙합/랩</p>
+                <div>
+                    <div>
+                        <img src="./covers/Dingo X Indigo Music.jpg" alt="">
+                        <p><span>띵</span><br>
+                            (Prod. By 기리보이)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/XX.jpg" alt="">
+                        <p><span>아낙네</span><br>
+                            MINO (송민호)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/10221424_500.jpg" alt="">
+                        <p><span>"SOLO"</span><br>
+                            제니 (JENNIE)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/LOVE YOURSELF 結 `Answer`.jpg" alt="">
+                        <p><span>IDOL</span><br>
+                            방탄소년단</p>
+                    </div>
+                    <div>
+                        <img src="./covers/LOVE YOURSELF 承 `Her`.jpg" alt="">
+                        <p><span>DNA</span><br>
+                            방탄소년단</p>
+                    </div>
+                </div>
+            </div>
+            <div class="music-genre-dence music">
+                <p>댄스</p>
+                <div>
+                    <div>
+                        <img src="./covers/Perfect Velvet - The 2nd Album.jpg" alt="">
+                        <p><span>피카부 (Peek-A-Boo)</span><br>
+                        Red Velvet (레드벨벳)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/YES or YES.jpg" alt="">
+                        <p><span>YES or YES</span><br>
+                        트와이스 (twice)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/Fun to The World.jpg" alt="">
+                        <p><span>Fun to The World</span><br>
+                        모모랜드 (Momoland)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/GREAT!.jpg" alt="">
+                        <p><span>GREAT</span><br>
+                        모모랜드 (Momoland)</p>
+                    </div>
+                    <div>
+                        <img src="./covers/Show me.jpg" alt="">
+                        <p><span>Show me</span><br>
+                        모모랜드 (Momoland)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="music-genre-Rock music">
+                <p>록/메탈</p>
+                <div>
+                    <div>
+                        <img src="./covers/장범준 3집.jpg" alt="">
+                        <p><span>당신과는 천천히</span><br>
+                        장범준</p>
+                    </div>
+                    <div>
+                        <img src="./covers/Red Diary Page.2.jpg" alt="">
+                        <p><span>여행</span><br>
+                        볼빨간사춘기</p>
+                    </div>
+                    <div>
+                        <img src="./covers/2012.02.14.jpg" alt="">
+                        <p><span>We Are Young (Feat. Janelle Monae)</span><br>
+                        Fun.</p>
+                    </div>
+                    <div>
+                        <img src="./covers/전설.jpg" alt="">
+                        <p><span>주저하는 연인들을 위해</span><br>
+                        잔나비</p>
+                    </div>
+                </div>
+            </div>
+            <div class="music-genre-POP music">
+                <p>POP</p>
+                <div>
+                    <div>
+                        <img src="./covers/Evolve.jpg" alt="">
+                        <p><span>Believer</span><br>
+                        Imagine Dragons</p>
+                    </div>
+                    <div>
+                        <img src="./covers/Nine Track Mind (Deluxe).jpg" alt="">
+                        <p><span>We Don`t Talk Anymore (Feat. Selena Gomez)</span><br>
+                        Charlie Puth</p>
+                    </div>
+                    <div>
+                        <img src="./covers/Despacito.jpg" alt="">
+                        <p><span>Despacito (Feat. Daddy Yankee)</span><br>
+                        Luis Fonsi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="cover-img">
+            <img src="./covers/Fun to The World.jpg" alt="">
+        </div>
+        <div class="music-text">
+            <p><span>Fun to The World </span><br>
+            모모랜드 (Momoland)</p>
+        </div>
+        <div class="music-player">
+            <div class="music-player-top">
+                <i class="fa fa-step-forward"></i>
+                <i class="fa fa-play-circle"></i>
+                <i class="fa fa-step-backward"></i>
+                <i class="fa fa-repeat"></i>
+            </div>
+            <div class="music-player-bottom">
+                <div class="view-lyrics-btn">가사보기</div>
+                <div class="now-time">0:40</div>
+                <div class="time-bar">
+                    <div class="time-up-bar"></div>
+                </div>
+                <div class="all-time">2:14</div>
+                <i class="fa fa-volume-off sound-btn"></i>
+                <input type="range" id="sound-set" value="0.5" max="1" min="0" step="0.1">
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

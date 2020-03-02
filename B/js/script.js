@@ -7,6 +7,7 @@ class App {
 		this.playList = new Array;
 		
 		let player= new Player(this);
+		this.Audio = new Audio;
 
 		// dom
 		this.contextmenu = document.querySelector("#contextmenu");
@@ -52,11 +53,12 @@ class App {
 		this.contextmenu.addEventListener("click", (e)=>{
 			if(e.target.classList[0] === "add-play-list") {
 				this.playList.forEach(i=>{
-					console.log(this.playList)
+					
 				})
 				if(this.playList.indexOf(this.nowMusic) != -1) return;
 				this.playList.push(this.nowMusic)
 				this.beMusicList = true;
+				this.Audio.src = `/B/m/${this.playList[0].url}`;
 			}
 		})
 		
@@ -67,46 +69,79 @@ class Player {
 	constructor(app) {
 		this.app = app;
 
+		this.musicPlayerTop = document.querySelector(".music-player-top");
+		
 		this.coverImg = document.querySelector(".cover-img");
 		this.musicText = document.querySelector(".music-text");
-		this.forwardBtn = document.querySelector(".fa-step-forward");
-		this.circleBtn = document.querySelector(".fa-play-circle");
-		this.backwardBtn = document.querySelector(".fa-step-backward");
 
-		this.Audio = new Audio;
+		this.forwardBtn = document.querySelector(".fa-step-forward");
+		this.playCircleBtn = document.querySelector(".fa-play-circle");
+		this.stopCircleBtn = document.querySelector(".fa-stop");
+		this.backwardBtn = document.querySelector(".fa-step-backward");
+		this.soundinput = document.querySelector("#sound-set");
+		this.soundPercent = document.querySelector(".sound-percent");
+
+		this.playNum = 0;
+
 		new Promise((res,rej)=>{
 			this.player();
 			res();
 		}).then(()=>{
 			this.addEvent();
 		});
-	}
+	} 
 
 	player() {
 		if(this.app.beMusicList) {
-			this.coverImg.innerHTML = `<img src="/B/covers/${this.app.playList[0].albumImage}"></img>`
-			this.musicText.innerHTML = `<p><span>${this.app.playList[0].name}</span><br>${this.app.playList[0].artist}</p>`
-			this.Audio.src = `/B/m/${this.app.playList[0].url}`;
-			this.Audio.currentTime = 0;
+			this.coverImg.innerHTML = `<img src="/B/covers/${this.app.playList[this.playNum].albumImage}"></img>`
+			this.musicText.innerHTML = `<p><span>${this.app.playList[this.playNum].name}</span><br>${this.app.playList[this.playNum].artist}</p>`
 		}
 		requestAnimationFrame(e => this.player());
 	}
 	
 	addEvent() {
 		// if(this.app.beMusicList) {
-			this.circleBtn.addEventListener("click", ()=>{
-				this.Audio.load();
-				this.Audio.oncanplaythrough = ()=>{
-					this.Audio.play();
-				}
-			})
-			this.forwardBtn.addEventListener("click", ()=>{
-				this.Audio.play()
-			})
-			this.backwardBtn.addEventListener("click", ()=>{
-				this.Audio.play()
-			})
+		this.playCircleBtn.addEventListener("click", ()=>{
+			this.app.Audio.load();
+			this.app.Audio.oncanplaythrough = ()=>{
+				this.app.Audio.play();
+			}
+			this.playCircleBtn.style.display = "none";
+			this.stopCircleBtn.style.display = "block";
+		})
+		this.stopCircleBtn.addEventListener("click", ()=>{
+			this.pause();
+		})
+		this.forwardBtn.addEventListener("click", ()=>{
+			this.playNum++;
+			console.log(this.app.playList.length)
+			if(this.app.playList.length == this.playNum) {
+				this.playNum = this.app.playList.length - 1;
+				return;
+			}
+			this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
+			this.pause();
+		})
+		this.backwardBtn.addEventListener("click", ()=>{
+			this.playNum--;
+			if(0 > this.playNum) {
+				this.playNum = 0;
+				return;
+			}
+			this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
+			this.pause();
+		})
+		this.soundinput.oninput = () => {
+			this.app.Audio.volume = this.soundinput.value / 10;
+			this.soundPercent.innerHTML = `${Math.floor(this.soundinput.value * 10)}%`;
+		}
 		// }
+	}
+
+	pause() {
+		this.app.Audio.pause();
+		this.playCircleBtn.style.display = "block";
+		this.stopCircleBtn.style.display = "none";
 	}
 }
 

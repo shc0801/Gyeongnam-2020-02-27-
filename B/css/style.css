@@ -176,7 +176,7 @@ section { width: 75%; height: 1000px; float: right; margin: 120px 30px 0 0; padd
 /* footer */
 
 footer { 
-    width: 75%; 
+    width: 85%; 
     height: 100px; 
     background-color: #f8f9fa;
 
@@ -192,21 +192,22 @@ footer {
 
 .cover-img { width: 5%; float: left; }
 .cover-img > img { width: 100%; }
-.music-text { font-size: .8em; float: left; margin: 10px 0 0 10px; }
+.music-text { width: 15%; font-size: .8em; float: left; margin: 10px 0 0 10px; }
 .music-text > p > span { font-size: 1.2em; font-weight: bold; }
 
 /* music-player */
-.music-player { width: 75%; height: 100%; position: relative; float: left; margin-left: 50px;}
+.music-player { width: 55%; height: 100%; position: relative; float: left; margin-left: 50px;}
 .music-player-top, .music-player-bottom {
     width: 100%;
     height: 50%;
     position: absolute;
     left: 0; top: 0;
 }
-.music-player-top > i { font-size: 30px; color: rgb(255, 175, 206); cursor: pointer;}
-.fa-step-forward { margin-left: 230px; }
-.fa-play-circle { margin-left: 100px;  }
-.fa-step-backward { margin-left: 100px; }
+.music-player-top > i { font-size: 30px; color: rgb(255, 175, 206); cursor: pointer; float: left;}
+.fa-step-forward { margin-left: 100PX; }
+.fa-play-circle, .fa-stop { margin-left: 100px; }
+.fa-stop { display: none; }
+.fa-step-backward { margin-left: 230PX; }
 .fa-repeat { margin-left: 50px; }
 
 .music-player-bottom { top: 50%; }
@@ -229,4 +230,4 @@ footer {
 .time-up-bar { width: 40%; height: 100%; background-color: rgb(255, 175, 206);}
 .sound-btn { font-size: 30px; color: rgb(255, 175, 206); margin-left: 30px;}
 #sound-set { width: 10%; }
-.sound-percent { width: 10%; float: right; margin: 5px 20px 0 0;} 
+.sound-percent { width: 5%; float: right; margin: 5px 20px 0 0;} 

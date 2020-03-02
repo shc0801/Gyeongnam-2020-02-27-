@@ -69,18 +69,45 @@ class Player {
 
 		this.coverImg = document.querySelector(".cover-img");
 		this.musicText = document.querySelector(".music-text");
-		this.player();
+		this.forwardBtn = document.querySelector(".fa-step-forward");
+		this.circleBtn = document.querySelector(".fa-play-circle");
+		this.backwardBtn = document.querySelector(".fa-step-backward");
+
+		this.Audio = new Audio;
+		new Promise((res,rej)=>{
+			this.player();
+			res();
+		}).then(()=>{
+			this.addEvent();
+		});
 	}
 
 	player() {
 		if(this.app.beMusicList) {
 			this.coverImg.innerHTML = `<img src="/B/covers/${this.app.playList[0].albumImage}"></img>`
 			this.musicText.innerHTML = `<p><span>${this.app.playList[0].name}</span><br>${this.app.playList[0].artist}</p>`
-			
+			this.Audio.src = `/B/m/${this.app.playList[0].url}`;
+			this.Audio.currentTime = 0;
 		}
 		requestAnimationFrame(e => this.player());
 	}
 	
+	addEvent() {
+		// if(this.app.beMusicList) {
+			this.circleBtn.addEventListener("click", ()=>{
+				this.Audio.load();
+				this.Audio.oncanplaythrough = ()=>{
+					this.Audio.play();
+				}
+			})
+			this.forwardBtn.addEventListener("click", ()=>{
+				this.Audio.play()
+			})
+			this.backwardBtn.addEventListener("click", ()=>{
+				this.Audio.play()
+			})
+		// }
+	}
 }
 
 window.addEventListener("load", e =>{

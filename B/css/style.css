@@ -190,7 +190,7 @@ footer {
     border-left: none;
 }
 
-.cover-img { width: 6%; float: left; }
+.cover-img { width: 5%; float: left; }
 .cover-img > img { width: 100%; }
 .music-text { font-size: .8em; float: left; margin: 10px 0 0 10px; }
 .music-text > p > span { font-size: 1.2em; font-weight: bold; }
@@ -229,3 +229,4 @@ footer {
 .time-up-bar { width: 40%; height: 100%; background-color: rgb(255, 175, 206);}
 .sound-btn { font-size: 30px; color: rgb(255, 175, 206); margin-left: 30px;}
 #sound-set { width: 10%; }
+.sound-percent { width: 10%; float: right; margin: 5px 20px 0 0;} 

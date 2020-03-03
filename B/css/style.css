@@ -45,7 +45,7 @@ header {
     border-bottom: 2px solid rgb(255, 238, 254); 
     z-index: 10000;
 }
-#logo { width: 5%; float: left; cursor: pointer;}
+#logo { width: 3.5%; float: left; cursor: pointer;}
 
 /* search */
 
@@ -205,8 +205,8 @@ footer {
 }
 .music-player-top > i { font-size: 30px; color: rgb(255, 175, 206); cursor: pointer; float: left;}
 .fa-step-forward { margin-left: 100PX; }
-.fa-play-circle, .fa-stop { margin-left: 100px; }
-.fa-stop { display: none; }
+.fa-play, .fa-pause { margin-left: 100px; }
+.fa-pause { display: none; }
 .fa-step-backward { margin-left: 230PX; }
 .fa-repeat { margin-left: 50px; }
 
@@ -224,10 +224,33 @@ footer {
 
     float: left;
     border-radius: 15px;
+    cursor: pointer;
 }
 .now-time, .all-time { float: left; margin-left: 30px; }
-.time-bar { width: 50%; height: 5px; background-color: rgb(247, 203, 147); float: left; margin: 10px 0 0 30px;}
-.time-up-bar { width: 40%; height: 100%; background-color: rgb(255, 175, 206);}
-.sound-btn { font-size: 30px; color: rgb(255, 175, 206); margin-left: 30px;}
+
+#time-bar { 
+    width: 50%; 
+    height: 5px;
+
+    float: left; 
+    margin: 10px 0 0 30px;
+    cursor: pointer;
+    outline: none;
+    background: #e4e4e4;
+    -webkit-appearance: none; 
+    border-radius: 0; /* iOS */
+}
+
+#time-bar::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border: 1px solid rgb(255, 81, 81);
+    border-radius:50%;
+    cursor: pointer;
+}
+ 
+.sound-btn { font-size: 30px; color: #ffafce; margin-left: 30px;}
 #sound-set { width: 10%; }
 .sound-percent { width: 5%; float: right; margin: 5px 20px 0 0;} 

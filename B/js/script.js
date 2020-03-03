@@ -6,6 +6,13 @@ Number.prototype.time = function(){
     return `${min}:${sec}`;
 };
 
+String.prototype.lyricsTime = function(){
+	
+	
+	
+	
+}
+
 class App {
     constructor() {
 
@@ -111,11 +118,15 @@ class Player {
 			this.nowTime.innerHTML = this.app.Audio.currentTime.time();
 			this.allTime.innerHTML = this.app.Audio.duration.time();
 
-			if(this.app.Audio.currentTime == this.app.Audio.duration) this.pause();
+			if(this.app.Audio.currentTime == this.app.Audio.duration) {
+				this.playNum++;
+				this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
+				this.app.Audio.currentTime = 0;
+				this.play();
+			}
 			this.timeBar.value = (this.app.Audio.currentTime * 100) / this.app.Audio.duration;
 			var val = $('input[type=range]').val();
 			$('input[type=range]').css('background', 'linear-gradient(to right, #ff8888 0%, #ff8888 '+ val +'%, #e4e4e4 ' + val + '%, #e4e4e4 ' + $('input[type=range]')[0].max + '%)');
-			console.log(this.timeBar.val)
 		}
 		requestAnimationFrame(e => this.player());
 	}
@@ -145,13 +156,17 @@ class Player {
 		// 이전 음악 재생
 		this.backwardBtn.addEventListener("click", ()=>{
 			if(!this.app.beMusicList) return;
-			this.playNum--;
-			if(0 > this.playNum) {
-				this.playNum = 0;
-				return;
+			if(this.app.Audio.currentTime < 10) {
+				this.playNum--;
+				if(0 > this.playNum) {
+					this.playNum = 0;
+					return;
+				}
+				this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
+				this.pause();
+			} else {
+				this.replay()
 			}
-			this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
-			this.pause();
 		})
 		
 		// 가사보기
@@ -185,18 +200,27 @@ class Player {
 		this.stopCircleBtn.style.display = "none";
 	}
 
+	//
+	replay() {
+		this.app.Audio.currentTime = 0;
+	}
+
 	viewLyrics() {
 		if(this.app.playList[this.playNum].lyrics == null) return;
-		
-		this.reader = new FileReader();
-		this.file = new File(`/B/선수제공파일(경남)/lyrics/${this.app.playList[this.playNum].lyrics}`);
-
-		this.reader.onload = function () {
-			output.innerText = this.reader.result;
-		};
-
-		console.log(this.file)
-		
+		$.ajax({
+			url: `lyrics/${this.app.playList[this.playNum].lyrics}`,
+			method: 'get',
+			success:(data)=>{
+				this.lyrics = data;
+				let lyricsData = /(?<lyricsNum>[0-9]+)\s*(?<startTime>[0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\s*-->\s*(?<endTime>[0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\s*(?<lyric>[^\r\n]+)/
+			
+                let result = [];
+				while(lyricsData.test(data)) {
+					let groups = lyricsData.exec(data).groups;
+					// let a = data.substr(data.indexOf(groups.lyric) + groups.lyric.length);
+				}
+			}
+		})
 	}
 
 	setVideoTime() {
@@ -206,6 +230,5 @@ class Player {
 
 window.addEventListener("load", e =>{
 	let app = new App();
-	
 });
 

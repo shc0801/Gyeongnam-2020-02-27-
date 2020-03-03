@@ -150,7 +150,7 @@ section { width: 75%; height: 1000px; float: right; margin: 120px 30px 0 0; padd
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     grid-template-rows: 1fr;
-    grid-gap: 15px;
+    grid-gap: 35px;
 }
 .music > div > div { 
     width: 100%; 
@@ -159,9 +159,9 @@ section { width: 75%; height: 1000px; float: right; margin: 120px 30px 0 0; padd
     
     font-size: .5em; 
     font-weight: 500; 
-    line-height: 22px;
+    line-height: 25px;
 
-    box-shadow: 5px 5px 7px;
+    box-shadow: 5px 5px 25px -10px;
     transition: transform .5s; transform: scale(1);
 }
 .music > div > div:hover { transform: scale(1.05);}
@@ -190,7 +190,7 @@ footer {
     border-left: none;
 }
 
-.cover-img { width: 5%; float: left; }
+.cover-img { width: 4%; float: left; }
 .cover-img > img { width: 100%; }
 .music-text { width: 15%; font-size: .8em; float: left; margin: 10px 0 0 10px; }
 .music-text > p > span { font-size: 1.2em; font-weight: bold; }

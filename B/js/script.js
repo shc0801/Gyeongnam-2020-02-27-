@@ -7,10 +7,10 @@ Number.prototype.time = function(){
 };
 
 String.prototype.lyricsTime = function(){
-	
-	
-	
-	
+	let reg = /(?<h>[0-9]{2}):(?<m>[0-9]{2}):(?<s>[0-9]{2}),(?<ms>[0-9]{3})/;
+	let startTime = reg.exec(this).groups;
+
+	return parseInt(startTime.m) * 60 + parseInt(startTime.s) + parseFloat(`0.${startTime.ms}`);
 }
 
 class App {
@@ -37,11 +37,28 @@ class App {
 				data.forEach(music => {
 					this.musicList.push(music);
 				});
+				data.map(x=>{
+					x.duration = console.log( this.getDuration(x.url));
+				})
+				localStorage.setItem("data", JSON.stringify(data));
 				res();
 			})
 		}).then(()=>{
 			this.addEvent();
 		});
+	}
+
+	getDuration(dataUrl) {
+		// $.ajax({
+		// 	url: `/B/m/${dataUrl}`,
+		// 	method: 'get',
+		// 	success: (data)=>{
+		// 		// data => data.ArrayBuffer();
+				
+				
+		// 		return new AudioContext().decodeAudioData(data.ArrayBuffer());
+		// 	}
+		// })
 	}
 	
 	addEvent(){ 
@@ -66,10 +83,7 @@ class App {
 		})
 
 		this.contextmenu.addEventListener("click", (e)=>{
-			if(e.target.classList[0] === "add-play-list") {
-				this.playList.forEach(i=>{
-					
-				})
+			if(e.target.classList[0] === "add-play-list") {					
 				if(this.playList.indexOf(this.nowMusic) != -1) return;
 				this.playList.push(this.nowMusic)
 				this.beMusicList = true;
@@ -102,6 +116,16 @@ class Player {
 		this.soundPercent = document.querySelector(".sound-percent");
 
 		this.playNum = 0;
+		this.lyrics = {
+			startTime: new Array,
+			endTime: new Array,
+			lyricsNum: new Array,
+			bool: false,
+			scroll: true,
+		};
+		
+		this.lyricForm = document.querySelector("#lyric-form");
+		this.lyricsNum = 0;
 
 		new Promise((res,rej)=>{
 			this.player();
@@ -119,12 +143,19 @@ class Player {
 			this.allTime.innerHTML = this.app.Audio.duration.time();
 
 			if(this.app.Audio.currentTime == this.app.Audio.duration) {
+				if(this.playNum == this.app.playList.length - 1) return;	
 				this.playNum++;
 				this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
 				this.app.Audio.currentTime = 0;
+				this.viewLyrics();
 				this.play();
 			}
+
+			this.lyricsScroll();
+			this.lyricsHigh();
+
 			this.timeBar.value = (this.app.Audio.currentTime * 100) / this.app.Audio.duration;
+
 			var val = $('input[type=range]').val();
 			$('input[type=range]').css('background', 'linear-gradient(to right, #ff8888 0%, #ff8888 '+ val +'%, #e4e4e4 ' + val + '%, #e4e4e4 ' + $('input[type=range]')[0].max + '%)');
 		}
@@ -152,6 +183,7 @@ class Player {
 			}
 			this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
 			this.pause();
+			this.viewLyrics();
 		})
 		// 이전 음악 재생
 		this.backwardBtn.addEventListener("click", ()=>{
@@ -164,6 +196,7 @@ class Player {
 				}
 				this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
 				this.pause();
+				this.viewLyrics();
 			} else {
 				this.replay()
 			}
@@ -171,7 +204,21 @@ class Player {
 		
 		// 가사보기
 		this.viewLyricsBtn.addEventListener("click", ()=>{
+			if(!this.app.beMusicList) return;
+			if(this.lyricForm.style.display == 'none' || this.lyricForm.style.display == "") {
+				this.lyricForm.style.display = 'block'
+				this.viewLyricsBtn.style.backgroundColor = "rgb(255, 77, 77)";
+			} else if(this.lyricForm.style.display == 'block') {
+				this.lyricForm.style.display = 'none'
+				this.viewLyricsBtn.style.backgroundColor = "rgb(255, 175, 206)";
+			}
 			this.viewLyrics();
+		})
+
+		// 가사부분 휠스크롤
+
+		this.lyricForm.addEventListener("mousewheel", ()=>{
+			this.lyrics.scroll = false;
 		})
 
 		// 타임 슬라이드바
@@ -191,6 +238,7 @@ class Player {
 		this.app.Audio.play();
 		this.playCircleBtn.style.display = "none";
 		this.stopCircleBtn.style.display = "block";
+		this.lyrics.bool = true;
 	}
 
 	//일시정지
@@ -198,6 +246,7 @@ class Player {
 		this.app.Audio.pause();
 		this.playCircleBtn.style.display = "block";
 		this.stopCircleBtn.style.display = "none";
+		this.lyrics.bool = false;
 	}
 
 	//
@@ -206,25 +255,69 @@ class Player {
 	}
 
 	viewLyrics() {
-		if(this.app.playList[this.playNum].lyrics == null) return;
+		if(this.app.playList[this.playNum].lyrics == null) {
+			let p = document.createElement("p");
+			p.innerText = "가사가 존재하지 않습니다";
+			this.lyricForm.appendChild(p)
+			return;
+		}
+		this.lyricForm.scroll({ top:0 });
 		$.ajax({
 			url: `lyrics/${this.app.playList[this.playNum].lyrics}`,
 			method: 'get',
 			success:(data)=>{
-				this.lyrics = data;
 				let lyricsData = /(?<lyricsNum>[0-9]+)\s*(?<startTime>[0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\s*-->\s*(?<endTime>[0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\s*(?<lyric>[^\r\n]+)/
-			
-                let result = [];
+				this.lyrics = {
+					startTime: new Array,
+					endTime: new Array,
+					lyricsNum: new Array,
+					bool: false,
+					scroll: true
+				};
+				this.lyricForm.innerHTML = "";
 				while(lyricsData.test(data)) {
 					let groups = lyricsData.exec(data).groups;
-					// let a = data.substr(data.indexOf(groups.lyric) + groups.lyric.length);
+					
+					data = data.substr(data.indexOf(groups.lyric) + groups.lyric.length);
+
+					let p = document.createElement("p");
+					p.id = `lyric-${groups.lyricsNum}`;
+					p.innerText = groups.lyric;
+					this.lyricForm.appendChild(p)
+
+					this.lyrics.startTime.push(groups.startTime.lyricsTime());
+					this.lyrics.endTime.push(groups.endTime.lyricsTime())
+					this.lyrics.lyricsNum.push(groups.lyricsNum);
 				}
 			}
-		})
+		})  
+	}
+
+	lyricsHigh() {
+		if(this.app.Audio.currentTime >= this.lyrics.startTime[this.lyricsNum]) {
+			$(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`).contents().unwrap().wrap( `<span id="lyric-${this.lyrics.lyricsNum[this.lyricsNum]}"></span>` );
+			if(this.app.Audio.currentTime >= this.lyrics.endTime[this.lyricsNum]) {
+				$(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`).contents().unwrap().wrap( `<p id="lyric-${this.lyrics.lyricsNum[this.lyricsNum]}"></p>` );
+				this.lyricsNum++;
+			}
+		}
+	}
+
+	lyricsScroll() {
+		if(!this.lyrics.scroll) return;
+		let highlight = document.querySelector(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`);
+		if(highlight == null) return;
+		this.lyricForm.scroll({
+            behavior: 'smooth',
+            left: 0,
+            top:highlight.offsetTop - 170
+        });
 	}
 
 	setVideoTime() {
 		this.app.Audio.currentTime = this.timeBar.value * this.app.Audio.duration / 100;
+		$(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`).contents().unwrap().wrap( `<p id="lyric-${this.lyrics.lyricsNum[this.lyricsNum]}"></p>` );
+		this.lyricsNum = 0;
 	}
 }
 

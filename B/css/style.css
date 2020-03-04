@@ -28,10 +28,35 @@ a { color: #3b3a3a; text-decoration: none; }
     border: 1px solid rgb(68, 68, 68); 
     border-radius: 15px;
     box-shadow: 10px 10px 30px -15px;
-    z-index: 100000;
+    z-index: 1000;
 }
 #contextmenu > div { height: calc(100% / 3); padding: 20px 0 0 15px; cursor: pointer;}
-#contextmenu > div:hover { background-color: rgb(136, 136, 136); }
+#contextmenu > div:hover { background-color: rgb(136, 136, 136); font-weight: bold;}
+
+/* lyric */
+
+#lyric-form {
+    width: 25%;
+    height: 100%;
+    background-color: rgba(248, 248, 248, 0.9);
+
+    position: fixed;
+    left: 0; top: 120px; 
+    
+    font-size: 20px;
+    font-weight: 550;
+    line-height: 40px;
+    text-align: center;
+    color: rgb(36, 36, 36);
+
+    padding: 50px 0 200px 0;
+    display: none;
+    overflow: scroll;
+    z-index: 100;
+}
+
+#lyric-form > span { color: rgb(255, 77, 77); font-weight: bold;}
+
 /* header */
 
 header { 
@@ -74,7 +99,16 @@ header {
 
 /* nav */
 
-nav { width: 25%; height: 100%; position: fixed; top: 120px; border-right: 2px solid rgb(255, 233, 254); }
+nav { 
+    width: 25%; 
+    height: 100%; 
+
+    position: fixed; 
+    top: 120px; 
+
+    border-right: 2px solid rgb(255, 233, 254); 
+}
+
 .line { width: 8%; height: 4px; background-color: rgb(255, 91, 91); margin: 0 auto; margin-top: 25px; border-radius: 10px;}
 
 .menu-top-text { font-size: 2em; font-weight: bold; line-height: 35px; text-align: center; }

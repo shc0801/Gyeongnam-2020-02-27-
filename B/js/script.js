@@ -33,13 +33,13 @@ class App {
 
     init() {
 		new Promise((res,rej)=>{
-			$.getJSON('js/music_list.json', (data) =>{
+			$.getJSON('js/music_list.json', async (data) =>{
 				data.forEach(music => {
 					this.musicList.push(music);
 				});
-				data.map(x=>{
-					x.duration = console.log( this.getDuration(x.url));
-				})
+				for(let x of data) {
+					x.duration = await this.getDuration(x.url);
+				}
 				localStorage.setItem("data", JSON.stringify(data));
 				res();
 			})
@@ -47,22 +47,18 @@ class App {
 			this.addEvent();
 		});
 	}
-
+ 
 	getDuration(dataUrl) {
-		// $.ajax({
-		// 	url: `/B/m/${dataUrl}`,
-		// 	method: 'get',
-		// 	success: (data)=>{
-		// 		// data => data.ArrayBuffer();
-				
-				
-		// 		return new AudioContext().decodeAudioData(data.ArrayBuffer());
-		// 	}
-		// })
+		return new Promise((res, rej)=>{
+			let audio = new Audio();
+			audio.src = `/B/m/${dataUrl}`;
+			audio.addEventListener("loadeddata", ()=>{
+				res(audio.duration);
+			})
+		})
 	}
 	
 	addEvent(){ 
-
 		//mouseEvent
 		
 		window.addEventListener("click", (e)=>{

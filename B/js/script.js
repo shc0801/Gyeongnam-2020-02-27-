@@ -15,18 +15,21 @@ String.prototype.lyricsTime = function(){
 
 class App {
     constructor() {
-
 		this.musicList = new Array;		
 		this.nowMusic;
 		this.beMusicList = false;
 		this.playList = new Array;
+		this.queueList = new Array;
+		this.playNum = 0;
 		
 		let player= new Player(this);
 		this.Audio = new Audio;
 
+		this.page = document.querySelectorAll(".page");
+
 		// dom
 		this.contextmenu = document.querySelector("#contextmenu");
-		this.$$musicCard = document.querySelectorAll(".music > div > div");
+		this.musicCard = document.querySelectorAll(".music > div > div");
         
         this.init();
     }
@@ -37,36 +40,50 @@ class App {
 				data.forEach(music => {
 					this.musicList.push(music);
 				});
-				for(let x of data) {
-					x.duration = await this.getDuration(x.url);
-				}
+				// for(let x of data) {
+				// 	x.duration = await this.getDuration(x.url);
+				// }
 				localStorage.setItem("data", JSON.stringify(data));
 				res();
 			})
 		}).then(()=>{
+			// this.loading();
 			this.addEvent();
 		});
 	}
+
+	// loading() {
+	// 	var loader = $(".loading-form");
+	// 	var section = $("section");
+	// 	loader.css("display","none");
+	// 	section.css("display","block");
+	// }
  
-	getDuration(dataUrl) {
-		return new Promise((res, rej)=>{
-			let audio = new Audio();
-			audio.src = `/B/m/${dataUrl}`;
-			audio.addEventListener("loadeddata", ()=>{
-				res(audio.duration);
-			})
-		})
-	}
+	// getDuration(dataUrl) {
+	// 	return new Promise((res, rej)=>{
+	// 		let audio = new Audio();
+	// 		audio.src = `/B/m/${dataUrl}`;
+	// 		audio.addEventListener("loadeddata", ()=>{
+	// 			res(audio.duration);
+	// 		})
+	// 	})
+	// }
 	
 	addEvent(){ 
-		//mouseEvent
-		
-		window.addEventListener("click", (e)=>{
-			this.contextmenu.style.display = 'none';
-			
+
+		// mouseEvent
+
+		this.page.forEach(page=>{
+			page.addEventListener("click", ()=>{
+				this.pageChange(page);
+			})
 		})
 
-		this.$$musicCard.forEach(music=>{
+		window.addEventListener("click", (e)=>{
+			this.contextmenu.style.display = 'none';
+		})
+
+		this.musicCard.forEach(music=>{
 			music.addEventListener("contextmenu", (e)=>{
 				event.preventDefault();
 				this.contextmenu.style.top = e.pageY + "px";
@@ -80,13 +97,32 @@ class App {
 
 		this.contextmenu.addEventListener("click", (e)=>{
 			if(e.target.classList[0] === "add-play-list") {					
-				if(this.playList.indexOf(this.nowMusic) != -1) return;
+				if(this.queueList.indexOf(this.nowMusic) != -1) return;
 				this.playList.push(this.nowMusic)
-				this.beMusicList = true;
-				this.Audio.src = `/B/m/${this.playList[0].url}`;
+			} else if(e.target.classList[0] === "next-music-play") {
+
+			} else if(e.target.classList[0] === "add-queue") {				
+				if(this.queueList.indexOf(this.nowMusic) != -1) return;
+				if(!this.beMusicList) {
+					this.queueList.push(this.nowMusic)
+					this.beMusicList = true;
+					this.Audio.src = `/B/m/${this.queueList[0].url}`;
+				} else {
+					this.queueList.push(this.nowMusic)
+				}
 			}
 		})
-		
+	}
+
+	pageChange(page) {
+		$.ajax({
+			url: `${page.classList[2]}.html`,
+			method: 'get',
+			success: (data)=>{
+				let section = document.querySelector("section");
+				section.innerHTML = data;
+			}
+		})
 	}
 }
 
@@ -111,7 +147,6 @@ class Player {
 		this.soundinput = document.querySelector("#sound-set");
 		this.soundPercent = document.querySelector(".sound-percent");
 
-		this.playNum = 0;
 		this.lyrics = {
 			startTime: new Array,
 			endTime: new Array,
@@ -133,18 +168,20 @@ class Player {
 
 	player() {
 		if(this.app.beMusicList) {
-			this.coverImg.innerHTML = `<img src="/B/covers/${this.app.playList[this.playNum].albumImage}"></img>`
-			this.musicText.innerHTML = `<p><span>${this.app.playList[this.playNum].name}</span><br>${this.app.playList[this.playNum].artist}</p>`
+			this.coverImg.innerHTML = `<img src="/B/covers/${this.app.queueList[this.app.playNum].albumImage}"></img>`
+			this.musicText.innerHTML = `<p><span>${this.app.queueList[this.app.playNum].name}</span><br>${this.app.queueList[this.app.playNum].artist}</p>`
 			this.nowTime.innerHTML = this.app.Audio.currentTime.time();
 			this.allTime.innerHTML = this.app.Audio.duration.time();
 
 			if(this.app.Audio.currentTime == this.app.Audio.duration) {
-				if(this.playNum == this.app.playList.length - 1) return;	
-				this.playNum++;
-				this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
-				this.app.Audio.currentTime = 0;
-				this.viewLyrics();
-				this.play();
+				this.pause();
+				if(this.app.playNum != this.app.queueList.length - 1) {
+					this.app.playNum++;
+					this.app.Audio.src = `/B/m/${this.app.queueList[this.app.playNum].url}`;
+					this.app.Audio.currentTime = 0;
+					this.viewLyrics();
+					this.play();
+				}	
 			}
 
 			this.lyricsScroll();
@@ -172,12 +209,12 @@ class Player {
 		// 다음 음악 재생
 		this.forwardBtn.addEventListener("click", ()=>{
 			if(!this.app.beMusicList) return;
-			this.playNum++;
-			if(this.app.playList.length == this.playNum) {
-				this.playNum = this.app.playList.length - 1;
+			this.app.playNum++;
+			if(this.app.queueList.length == this.app.playNum) {
+				this.app.playNum = this.app.queueList.length - 1;
 				return;
 			}
-			this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
+			this.app.Audio.src = `/B/m/${this.app.queueList[this.app.playNum].url}`;
 			this.pause();
 			this.viewLyrics();
 		})
@@ -185,12 +222,12 @@ class Player {
 		this.backwardBtn.addEventListener("click", ()=>{
 			if(!this.app.beMusicList) return;
 			if(this.app.Audio.currentTime < 10) {
-				this.playNum--;
-				if(0 > this.playNum) {
-					this.playNum = 0;
+				this.app.playNum--;
+				if(0 > this.app.playNum) {
+					this.app.playNum = 0;
 					return;
 				}
-				this.app.Audio.src = `/B/m/${this.app.playList[this.playNum].url}`;
+				this.app.Audio.src = `/B/m/${this.app.queueList[this.app.playNum].url}`;
 				this.pause();
 				this.viewLyrics();
 			} else {
@@ -251,7 +288,8 @@ class Player {
 	}
 
 	viewLyrics() {
-		if(this.app.playList[this.playNum].lyrics == null) {
+		if(this.app.queueList[this.app.playNum].lyrics == null) {
+			this.lyricForm.innerHTML = "";
 			let p = document.createElement("p");
 			p.innerText = "가사가 존재하지 않습니다";
 			this.lyricForm.appendChild(p)
@@ -259,7 +297,7 @@ class Player {
 		}
 		this.lyricForm.scroll({ top:0 });
 		$.ajax({
-			url: `lyrics/${this.app.playList[this.playNum].lyrics}`,
+			url: `lyrics/${this.app.queueList[this.app.playNum].lyrics}`,
 			method: 'get',
 			success:(data)=>{
 				let lyricsData = /(?<lyricsNum>[0-9]+)\s*(?<startTime>[0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\s*-->\s*(?<endTime>[0-9]{2}:[0-9]{2}:[0-9]{2},[0-9]{3})\s*(?<lyric>[^\r\n]+)/
@@ -292,7 +330,7 @@ class Player {
 	lyricsHigh() {
 		if(this.app.Audio.currentTime >= this.lyrics.startTime[this.lyricsNum]) {
 			$(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`).contents().unwrap().wrap( `<span id="lyric-${this.lyrics.lyricsNum[this.lyricsNum]}"></span>` );
-			if(this.app.Audio.currentTime >= this.lyrics.endTime[this.lyricsNum]) {
+			if(this.app.Audio.currentTime >= this.lyrics.startTime[this.lyricsNum + 1]) {
 				$(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`).contents().unwrap().wrap( `<p id="lyric-${this.lyrics.lyricsNum[this.lyricsNum]}"></p>` );
 				this.lyricsNum++;
 			}
@@ -303,11 +341,26 @@ class Player {
 		if(!this.lyrics.scroll) return;
 		let highlight = document.querySelector(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`);
 		if(highlight == null) return;
-		this.lyricForm.scroll({
-            behavior: 'smooth',
-            left: 0,
-            top:highlight.offsetTop - 170
-        });
+		console.log(this.lyricForm.scrollTop, highlight.offsetTop + 170)
+		if(-600 > this.lyricForm.scrollTop - highlight.offsetTop ){
+			this.lyricForm.scroll({
+				behavior: 'auto',
+				left: 0,
+				top:highlight.offsetTop - 170
+			});
+		} else if( 600 < this.lyricForm.scrollTop - highlight.offsetTop ) {
+			this.lyricForm.scroll({
+				behavior: 'auto',
+				left: 0,
+				top:highlight.offsetTop - 170
+			});
+		} else {
+			this.lyricForm.scroll({
+				behavior: 'smooth',
+				left: 0,
+				top:highlight.offsetTop - 170
+			});
+		}
 	}
 
 	setVideoTime() {

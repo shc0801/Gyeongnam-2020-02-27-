@@ -6,6 +6,8 @@
     <title>부산뮤직페스티벌</title>
     <link rel="stylesheet" href="./css/fontAwesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/Library.css">
+    <link rel="stylesheet" href="./css/Queue.css">
     <script src="./js/jquery-3.3.1.js"></script>
     <script src="./js/script.js"></script>
 </head>
@@ -16,7 +18,9 @@
         <div class="add-queue contextmenu">대기열 추가</div>
     </div>
     <div id="lyric-form"></div>
-    <div class="loading"></div>
+    <!-- <div class="loading-form">
+        <div class="loading"></div>
+    </div> -->
     <header>
         <a href="#"><img id="logo" src="./images/logo.png" alt=""></a>
         <div class="search-bar">
@@ -50,16 +54,16 @@
                     </div>
                 </form>
             </div>
-            <div class="menu-HOME"><a href="index.html"><p>HOME</p></a></div>
-            <div class="menu-Library"><a href="./Library.html"><p>Library</p></a></div>
-            <div class="menu-Queue"><a href="./Queue.html"><p>Queue</p></a></div>
+            <div class="menu-HOME page Home"><a href="#"><p>HOME</p></a></div>
+            <div class="menu-Library page Library"><a href="#"><p>Library</p></a></div>
+            <div class="menu-Queue page Queue"><a href="#"><p>Queue</p></a></div>
         </div>
         <div class="thank-you">
             <p>Thank you for useing this web</p>
         </div>
         <div class="thank-you-line"></div>
     </nav>
-    <section>
+    <section style="display: block;">
         <div class="music-recommendation music">
             <p>추천음악</p>
             <div>

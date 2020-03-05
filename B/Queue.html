@@ -1,104 +1,20 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>부산뮤직페스티벌</title>
-    <link rel="stylesheet" href="./css/fontAwesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/Queue.css">
-</head>
-<body>
-    <header>
-        <a href="#"><img id="logo" src="./images/logo.png" alt=""></a>
-        <div class="search-bar">
-            <i class="fa fa-search"></i>
-            <input type="text" id="search" placeholder="search for songs">
+<div class="music-play-list">
+    <div class="music-play-list-header">
+        <p>대기열페이지</p>
+        <div class="music-play-list-header-text">
+            <div class="music-play-list-header-title">제목</div>
+            <div class="music-play-list-header-artist">아티스트</div>
+            <div class="music-play-list-header-pathos">앨범제목</div>
+            <div class="music-play-list-header-run-time">러닝타임</div>
         </div>
-    </header>
-    <nav>
-        <div class="line"></div>
-        <div class="menu-top-text">
-            <p>menu</p>
+    </div>
+    <div class="music-play-list-main">
+        <img id="music-play-list-cover" src="./covers/pathos.jpg" alt="">
+        <div class="music-play-list-text">
+            <div class="music-play-list-title">어디에도</div>
+            <div class="music-play-list-artist">엠씨더맥스</div>
+            <div class="music-play-list-pathos">pathos</div>
+            <div class="music-play-list-run-time">3:15</div>
         </div>
-        <div class="menu">
-            <div class="menu-logIn">
-                <input type="checkbox" id="login-key">
-                <label for="login-key">logIn</label>
-                <form id="login-form">
-                    <div class="login-form-title">
-                        LogIn
-                    </div>
-                    <div class="form-group">
-                        <label for="userid">아이디</label>
-                        <input type="text" class="form-control is-invalid" id="login-userid" name="userid">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">비밀번호</label>
-                        <input type="password" class="form-control is-invalid" id="login-password" name="password">
-                    </div>
-                    <div class="form-group">
-                        <a href="#" id="login-form-btn" class="form-btn">로그인</a>
-                    </div>
-                </form>
-            </div>
-            <div class="menu-HOME"><a href="./index.html"><p>HOME</p></a></div>
-            <div class="menu-Library"><a href="./Library.html"><p>Library</p></a></div>
-            <div class="menu-Queue"><a href="./Queue.html"><p>Queue</p></a></div>
-        </div>
-        <div class="thank-you">
-            <p>Thank you for useing this web</p>
-        </div>
-        <div class="thank-you-line"></div>
-    </nav>
-    <section>
-        <div class="music-play-list">
-            <div class="music-play-list-header">
-                <p>대기열페이지</p>
-                <div class="music-play-list-header-text">
-                    <div class="music-play-list-header-title">제목</div>
-                    <div class="music-play-list-header-artist">아티스트</div>
-                    <div class="music-play-list-header-pathos">앨범제목</div>
-                    <div class="music-play-list-header-run-time">러닝타임</div>
-                </div>
-            </div>
-            <div class="music-play-list-main">
-                <img id="music-play-list-cover" src="./covers/pathos.jpg" alt="">
-                <div class="music-play-list-text">
-                    <div class="music-play-list-title">어디에도</div>
-                    <div class="music-play-list-artist">엠씨더맥스</div>
-                    <div class="music-play-list-pathos">pathos</div>
-                    <div class="music-play-list-run-time">3:15</div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <footer>
-        <div class="cover-img">
-            <img src="./covers/Fun to The World.jpg" alt="">
-        </div>
-        <div class="music-text">
-            <p><span>Fun to The World </span><br>
-            모모랜드 (Momoland)</p>
-        </div>
-        <div class="music-player">
-            <div class="music-player-top">
-                <i class="fa fa-step-forward"></i>
-                <i class="fa fa-play-circle"></i>
-                <i class="fa fa-step-backward"></i>
-                <i class="fa fa-repeat"></i>
-            </div>
-            <div class="music-player-bottom">
-                <div class="view-lyrics-btn">가사보기</div>
-                <div class="now-time">0:40</div>
-                <div class="time-bar">
-                    <div class="time-up-bar"></div>
-                </div>
-                <div class="all-time">2:14</div>
-                <i class="fa fa-volume-off sound-btn"></i>
-                <input type="range" id="sound-set" value="0.5" max="1" min="0" step="0.1">
-            </div>
-        </div>
-    </footer>
-</body>
-</html>
+    </div>
+</div>

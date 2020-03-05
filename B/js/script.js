@@ -121,6 +121,9 @@ class App {
 			success: (data)=>{
 				let section = document.querySelector("section");
 				section.innerHTML = data;
+				if(page.classList[2] === 'Queue') {
+					let queue = new Queue(this);
+				} 
 			}
 		})
 	}
@@ -367,6 +370,42 @@ class Player {
 		this.app.Audio.currentTime = this.timeBar.value * this.app.Audio.duration / 100;
 		$(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`).contents().unwrap().wrap( `<p id="lyric-${this.lyrics.lyricsNum[this.lyricsNum]}"></p>` );
 		this.lyricsNum = 0;
+	}
+}
+
+class Queue {
+	constructor(app) {
+		this.app = app;
+		
+		this.queueMain = document.querySelectorAll(".music-play-list-main");
+					
+		// this.queueList = {
+		// 	title: queueList[0],
+		// 	artist: queueList[1],
+		// 	albumName: queueList[2],
+		// 	runTime: queueList[3],
+		// }
+		this.listNum = 0;
+		this.init();
+		console.log(this.app.queueList)
+	}
+
+	init() {
+		this.innerList();
+	}
+
+	innerList() {
+		this.app.queueList.forEach(list=>{
+			let listData = `<img id="music-play-list-cover" src="/covers/${list.albumImage}" alt="">
+							<div class="music-play-list-text">
+								<div class="music-play-list-title"></div>
+								<div class="music-play-list-artist"></div>
+								<div class="music-play-list-pathos"></div>
+								<div class="music-play-list-run-time"></div>
+							</div>`;
+			this.queueMain.appendChild(listData)
+			
+		})
 	}
 }
 

@@ -30,6 +30,12 @@ class App {
 
 		// dom
 		this.contextmenu = document.querySelector("#contextmenu");
+		this.playListMenu = document.querySelector("#playListMenu");
+		this.newPlayList = document.querySelector(".newPlayList");
+		this.newplayListForm = document.querySelector(".newplayListForm");
+		this.playListCloseBtn = document.querySelector(".fa-close");
+		this.playListInput = document.querySelector("#playListInput");
+		this.addPlayListBtn = document.querySelector("#addPlayListBtn")
 		this.musicCard = document.querySelectorAll(".music > div > div");
         
         this.init();
@@ -45,7 +51,6 @@ class App {
 				data.forEach(music => {
 					this.musicList.push(music);
 				});
-				console.log(this.musicList)
 				res();
 			})
 		}).then(()=>{
@@ -100,7 +105,7 @@ class App {
 		this.contextmenu.addEventListener("click", (e)=>{
 			if(e.target.classList[0] === "add-play-list") {					
 				if(this.queueList.indexOf(this.nowMusic) != -1) return;
-				this.playList.push(this.nowMusic)
+				this.viewPlayListMenu(e);
 			} else if(e.target.classList[0] === "next-music-play") {
 
 			} else if(e.target.classList[0] === "add-queue") {				
@@ -113,6 +118,24 @@ class App {
 					this.queueList.push(this.nowMusic)
 				}
 			}
+		})
+
+		this.newPlayList.addEventListener("click", (e)=>{
+			this.newplayListForm.style.display = "block";
+		})
+
+		this.playListCloseBtn.addEventListener("click", ()=>{
+			this.playListMenu.style.display = "none";
+			this.newplayListForm.style.display = "none";
+		})
+
+		this.addPlayListBtn.addEventListener("click", ()=>{
+			this.playList.forEach(list=>{
+				console.log(list, this.playListInput.value)
+				if(list == this.playListInput.value) return;
+			})
+			this.playList.push(this.playListInput.value);
+			console.log(this.playList)
 		})
 	}
 
@@ -130,6 +153,18 @@ class App {
 				}
 			}
 		})
+	}
+
+	viewPlayListMenu(e) {
+		this.playListMenu.style.top = e.pageY + "px";
+		this.playListMenu.style.left = e.pageX + "px";
+		this.playListMenu.style.display = 'block';
+	}
+
+	newPlayListForm(e) {
+		this.playListMenu.style.top = e.pageY + "px";
+		this.playListMenu.style.left = e.pageX + "px";
+		this.playListMenu.style.display = 'block';
 	}
 }
 
@@ -432,6 +467,9 @@ class Queue {
 class Library {
 	constructor(app) {
 		this.app = app;
+
+		this.musicHistoryList = document.querySelector(".music-history-list");
+
 		this.init();
 	}
 
@@ -441,7 +479,17 @@ class Library {
 	}
 
 	innerSectionData() {
-		
+		for(let i = this.app.historyList.length - 1; i > this.app.historyList.length - 6; i--) {
+			console.log(this.app.historyList[i])
+			let list = document.createElement("div");
+			let listData = `<img id="music-history-list-cover" src="./covers/${this.app.historyList[i].albumImage}" alt="">
+							<div class="music-history-list-title">${this.app.historyList[i].name}</div>
+							<div class="music-history-list-artist">${this.app.historyList[i].artist}</div>
+							<div class="music-history-list-pathos">${this.app.historyList[i].albumName}</div>`;
+							// <div class="music-history-list-run-time">${this.app.historyList[i].duration.time()}</div>`;
+			list.innerHTML = listData;
+			this.musicHistoryList.appendChild(list)
+		}
 	}
 
 	frame() {

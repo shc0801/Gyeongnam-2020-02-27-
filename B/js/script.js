@@ -20,6 +20,7 @@ class App {
 		this.beMusicList = false;
 		this.playList = new Array;
 		this.queueList = new Array;
+		this.historyList = new Array;
 		this.playNum = 0;
 		
 		let player= new Player(this);
@@ -37,13 +38,14 @@ class App {
     init() {
 		new Promise((res,rej)=>{
 			$.getJSON('js/music_list.json', async (data) =>{
-				data.forEach(music => {
-					this.musicList.push(music);
-				});
 				// for(let x of data) {
 				// 	x.duration = await this.getDuration(x.url);
 				// }
 				localStorage.setItem("data", JSON.stringify(data));
+				data.forEach(music => {
+					this.musicList.push(music);
+				});
+				console.log(this.musicList)
 				res();
 			})
 		}).then(()=>{
@@ -59,15 +61,15 @@ class App {
 	// 	section.css("display","block");
 	// }
  
-	// getDuration(dataUrl) {
-	// 	return new Promise((res, rej)=>{
-	// 		let audio = new Audio();
-	// 		audio.src = `/B/m/${dataUrl}`;
-	// 		audio.addEventListener("loadeddata", ()=>{
-	// 			res(audio.duration);
-	// 		})
-	// 	})
-	// }
+	getDuration(dataUrl) {
+		return new Promise((res, rej)=>{
+			let audio = new Audio();
+			audio.src = `/B/m/${dataUrl}`;
+			audio.addEventListener("loadeddata", ()=>{
+				res(audio.duration);
+			})
+		})
+	}
 	
 	addEvent(){ 
 
@@ -123,7 +125,9 @@ class App {
 				section.innerHTML = data;
 				if(page.classList[2] === 'Queue') {
 					let queue = new Queue(this);
-				} 
+				} else if(page.classList[2] === 'Library') {
+					let library = new Library(this);
+				}
 			}
 		})
 	}
@@ -224,7 +228,7 @@ class Player {
 		// 이전 음악 재생
 		this.backwardBtn.addEventListener("click", ()=>{
 			if(!this.app.beMusicList) return;
-			if(this.app.Audio.currentTime < 10) {
+			if(this.app.Audio.currentTime < 5) {
 				this.app.playNum--;
 				if(0 > this.app.playNum) {
 					this.app.playNum = 0;
@@ -236,6 +240,11 @@ class Player {
 			} else {
 				this.replay()
 			}
+		})
+
+		// 재생기록 저장
+		this.app.Audio.addEventListener("loadeddata", ()=>{
+			this.app.historyList.push(this.app.queueList[this.app.playNum]);
 		})
 		
 		// 가사보기
@@ -344,7 +353,6 @@ class Player {
 		if(!this.lyrics.scroll) return;
 		let highlight = document.querySelector(`#lyric-${this.lyrics.lyricsNum[this.lyricsNum]}`);
 		if(highlight == null) return;
-		console.log(this.lyricForm.scrollTop, highlight.offsetTop + 170)
 		if(-600 > this.lyricForm.scrollTop - highlight.offsetTop ){
 			this.lyricForm.scroll({
 				behavior: 'auto',
@@ -377,8 +385,7 @@ class Queue {
 	constructor(app) {
 		this.app = app;
 		
-		this.queueMain = document.querySelectorAll(".music-play-list-main");
-					
+		this.queueMain = document.querySelector(".music-queue-list-main");
 		// this.queueList = {
 		// 	title: queueList[0],
 		// 	artist: queueList[1],
@@ -387,25 +394,59 @@ class Queue {
 		// }
 		this.listNum = 0;
 		this.init();
-		console.log(this.app.queueList)
 	}
 
 	init() {
 		this.innerList();
+		this.frame();
+	}
+ 
+	innerList() {
+		this.app.queueList.forEach(queue=>{
+			let list = document.createElement("div");
+			let listData = `<img id="music-queue-list-cover" src="./covers/${queue.albumImage}" alt="">
+							<div class="music-queue-list-title">${queue.name}</div>
+							<div class="music-queue-list-artist">${queue.artist}</div>
+							<div class="music-queue-list-pathos">${queue.albumName}</div>
+							<div class="music-queue-list-run-time">${queue.duration.time()}</div>`;
+			list.innerHTML = listData;
+			this.queueMain.appendChild(list)
+		})
+		this.highDiv = document.querySelectorAll(".music-queue-list-main > div");
+	}
+	
+	highLight() {
+		this.highDiv.forEach(div=>{
+			div.style.border = 'none';
+		})
+		this.highDiv[this.app.playNum].style.border = "2px solid rgb(255, 90, 90)";
 	}
 
-	innerList() {
-		this.app.queueList.forEach(list=>{
-			let listData = `<img id="music-play-list-cover" src="/covers/${list.albumImage}" alt="">
-							<div class="music-play-list-text">
-								<div class="music-play-list-title"></div>
-								<div class="music-play-list-artist"></div>
-								<div class="music-play-list-pathos"></div>
-								<div class="music-play-list-run-time"></div>
-							</div>`;
-			this.queueMain.appendChild(listData)
-			
-		})
+	frame() {
+		this.highLight();
+		
+		requestAnimationFrame(e => this.frame());
+	}
+}
+
+class Library {
+	constructor(app) {
+		this.app = app;
+		this.init();
+	}
+
+	init() {
+		this.frame();
+		this.innerSectionData();
+	}
+
+	innerSectionData() {
+		
+	}
+
+	frame() {
+
+		requestAnimationFrame(e=> this.frame());
 	}
 }
 

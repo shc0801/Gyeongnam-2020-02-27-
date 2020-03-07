@@ -18,6 +18,7 @@ class App {
 		this.musicList = new Array;		
 		this.nowMusic;
 		this.beMusicList = false;
+		this.bePlayList = false;
 		this.playList = new Array;
 		this.queueList = new Array;
 		this.historyList = new Array;
@@ -35,7 +36,9 @@ class App {
 		this.newplayListForm = document.querySelector(".newplayListForm");
 		this.playListCloseBtn = document.querySelector(".fa-close");
 		this.playListInput = document.querySelector("#playListInput");
+		this.addPlayList = document.querySelector(".addPlayList");
 		this.addPlayListBtn = document.querySelector("#addPlayListBtn")
+		this.addPlayListButton = null;
 		this.musicCard = document.querySelectorAll(".music > div > div");
         
         this.init();
@@ -105,6 +108,7 @@ class App {
 		this.contextmenu.addEventListener("click", (e)=>{
 			if(e.target.classList[0] === "add-play-list") {					
 				if(this.queueList.indexOf(this.nowMusic) != -1) return;
+				this.playListInput.value = '';
 				this.viewPlayListMenu(e);
 			} else if(e.target.classList[0] === "next-music-play") {
 
@@ -131,11 +135,15 @@ class App {
 
 		this.addPlayListBtn.addEventListener("click", ()=>{
 			this.playList.forEach(list=>{
-				console.log(list, this.playListInput.value)
-				if(list == this.playListInput.value) return;
+				if(list[0] == this.playListInput.value) {
+					this.bePlayList = true;
+				};
 			})
-			this.playList.push(this.playListInput.value);
-			console.log(this.playList)
+			if(!this.bePlayList) {
+				this.playList.push([this.playListInput.value, []]);
+				this.InnerPlayListMenu()
+			}
+			this.bePlayList = false;
 		})
 	}
 
@@ -159,12 +167,51 @@ class App {
 		this.playListMenu.style.top = e.pageY + "px";
 		this.playListMenu.style.left = e.pageX + "px";
 		this.playListMenu.style.display = 'block';
+		this.InnerPlayListMenu();
 	}
 
 	newPlayListForm(e) {
 		this.playListMenu.style.top = e.pageY + "px";
 		this.playListMenu.style.left = e.pageX + "px";
 		this.playListMenu.style.display = 'block';
+	}
+
+	InnerPlayListMenu() {
+		this.addPlayList.innerHTML = '';
+		this.playList.forEach(list=>{
+			let playList = document.createElement("div");
+			let listData = `<div class="playList"><input type="checkbox" name="addPlayListButton" id="${list[0]}" class="addPlayListButton">${list[0]}</div>`;
+			list[1].forEach(data=>{
+				if(data == this.nowMusic) {
+					listData = `<div class="playList"><input type="checkbox" name="addPlayListButton" id="${list[0]}" class="addPlayListButton" checked>${list[0]}</div>`;
+				}
+			})
+			playList.innerHTML = listData;
+			this.addPlayList.appendChild(playList)
+		})
+
+		this.addPlayListButton = document.querySelectorAll(".addPlayListButton");
+
+		this.addPlayListButton.forEach((btn, i)=>{
+			btn.addEventListener("change", (e)=>{
+				if(e.target.checked) {
+					let is = false;
+					this.playList[i][1].forEach(list=>{
+						if(list == this.nowMusic)
+							is = true;
+					})
+					if(!is)
+						this.playList[i][1].push(this.nowMusic)
+				} else {
+					this.playList[i][1].forEach((list, idx)=>{
+						if(list == this.nowMusic)
+							this.playList[i][1].splice(idx, 1)
+					})
+				}
+				
+			})
+		})
+		console.log(this.playList)
 	}
 }
 
@@ -469,32 +516,87 @@ class Library {
 		this.app = app;
 
 		this.musicHistoryList = document.querySelector(".music-history-list");
+		this.musicPlayListMain = document.querySelector(".music-play-list-main");
 
 		this.init();
 	}
 
 	init() {
 		this.frame();
-		this.innerSectionData();
+		this.innerSectionHistoryData();
+		this.innerSectionPlayListData();
 	}
 
-	innerSectionData() {
-		for(let i = this.app.historyList.length - 1; i > this.app.historyList.length - 6; i--) {
-			console.log(this.app.historyList[i])
+	innerSectionHistoryData() {
+		// for(let i = this.app.historyList.length - 1; i > this.app.historyList.length - 6; i--) {
+		// 	console.log(this.app.historyList[i])
+		// 	let list = document.createElement("div");
+		// 	let listData = `<img id="music-history-list-cover" src="./covers/${this.app.historyList[i].albumImage}" alt="">
+		// 					<div class="music-history-list-title">${this.app.historyList[i].name}</div>
+		// 					<div class="music-history-list-artist">${this.app.historyList[i].artist}</div>
+		// 					<div class="music-history-list-pathos">${this.app.historyList[i].albumName}</div>`;
+		// 					// <div class="music-history-list-run-time">${this.app.historyList[i].duration.time()}</div>`;
+		// 	list.innerHTML = listData;
+		// 	this.musicHistoryList.appendChild(list)
+		// }
+	}
+
+	innerSectionPlayListData() {
+		this.app.playList.forEach(playList=>{
 			let list = document.createElement("div");
-			let listData = `<img id="music-history-list-cover" src="./covers/${this.app.historyList[i].albumImage}" alt="">
-							<div class="music-history-list-title">${this.app.historyList[i].name}</div>
-							<div class="music-history-list-artist">${this.app.historyList[i].artist}</div>
-							<div class="music-history-list-pathos">${this.app.historyList[i].albumName}</div>`;
-							// <div class="music-history-list-run-time">${this.app.historyList[i].duration.time()}</div>`;
-			list.innerHTML = listData;
-			this.musicHistoryList.appendChild(list)
-		}
+			let playListData = `
+				<img id="music-play-list-cover" src="./covers/${playList[1][0].albumImage}" alt="">
+				<div class="music-play-list-title"><a class="playListPageBtn ${playList[0]} playlist" href="#"> - ${playList[0]} <span>(${playList[1].length})</span></a></div>`;
+			list.innerHTML = playListData;
+			this.musicPlayListMain.appendChild(list); 
+			this.playListPageBtn = document.querySelectorAll(".playListPageBtn");
+			console.log(this.playListPageBtn)
+		})
+
+		this.playListPageBtn.forEach(btn=>{
+			btn.addEventListener("click", (e)=>{
+				this.movePage(e.target);
+			})
+		})
+	}
+
+	movePage(e) {
+		console.log(e.classList[2])
+		$.ajax({
+			url: `${e.classList[2]}.html`,
+			method: 'get',
+			success: (data)=>{
+				let section = document.querySelector("section");
+				section.innerHTML = data;
+				let playList = new PlayList(this.app, this, e.target);
+			}
+		})
 	}
 
 	frame() {
 
 		requestAnimationFrame(e=> this.frame());
+	}
+}
+
+class PlayList {
+	constructor(app, library, playList) {
+		this.app = app;
+		this.library = library;
+		this.playList = playList;
+
+		this.musicRecommendation = document.querySelector(".music-recommendation")
+
+		this.innerList();
+	}
+
+	innerList() {
+		let music = document.createElement("div");
+		let musicData = `<div>
+							<img src="./covers/RECIPE.jpg" alt="">
+							<p><span>열애중</span><br>
+							벤</p>
+						</div>`;
 	}
 }
 

@@ -111,7 +111,7 @@ class App {
 				this.playListInput.value = '';
 				this.viewPlayListMenu(e);
 			} else if(e.target.classList[0] === "next-music-play") {
-
+				this.nextPlay();
 			} else if(e.target.classList[0] === "add-queue") {				
 				if(this.queueList.indexOf(this.nowMusic) != -1) return;
 				if(!this.beMusicList) {
@@ -140,7 +140,9 @@ class App {
 				};
 			})
 			if(!this.bePlayList) {
-				this.playList.push([this.playListInput.value, []]);
+				if(this.playListInput.value != ""){
+					this.playList.push([this.playListInput.value, []]);
+				}
 				this.InnerPlayListMenu()
 			}
 			this.bePlayList = false;
@@ -211,7 +213,22 @@ class App {
 				
 			})
 		})
-		console.log(this.playList)
+	}
+	
+	nextPlay() {
+		if(this.queueList.length == 0) {				
+			if(this.queueList.indexOf(this.nowMusic) != -1) return;
+			if(!this.beMusicList) {
+				this.queueList.push(this.nowMusic)
+				this.beMusicList = true;
+				this.Audio.src = `/B/m/${this.queueList[0].url}`;
+			} else {
+				this.queueList.push(this.nowMusic)
+			}
+		} else {
+			this.queueList.splice(this.playNum + 1, 0, this.nowMusic);
+			console.log(this.queueList)
+		}
 	}
 }
 
@@ -523,8 +540,10 @@ class Library {
 
 	init() {
 		this.frame();
-		this.innerSectionHistoryData();
-		this.innerSectionPlayListData();
+		if(this.app.playList.length != 0) {
+			this.innerSectionHistoryData();
+			this.innerSectionPlayListData();
+		}
 	}
 
 	innerSectionHistoryData() {
@@ -542,11 +561,11 @@ class Library {
 	}
 
 	innerSectionPlayListData() {
-		this.app.playList.forEach(playList=>{
+		this.app.playList.forEach((playList, i)=>{
 			let list = document.createElement("div");
 			let playListData = `
 				<img id="music-play-list-cover" src="./covers/${playList[1][0].albumImage}" alt="">
-				<div class="music-play-list-title"><a class="playListPageBtn ${playList[0]} playlist" href="#"> - ${playList[0]} <span>(${playList[1].length})</span></a></div>`;
+				<div class="music-play-list-title"><a id="${i}" class="playListPageBtn ${playList[0]} playlist" href="#"> - ${playList[0]} <span>(${playList[1].length})</span></a></div>`;
 			list.innerHTML = playListData;
 			this.musicPlayListMain.appendChild(list); 
 			this.playListPageBtn = document.querySelectorAll(".playListPageBtn");
@@ -561,14 +580,13 @@ class Library {
 	}
 
 	movePage(e) {
-		console.log(e.classList[2])
 		$.ajax({
 			url: `${e.classList[2]}.html`,
 			method: 'get',
 			success: (data)=>{
 				let section = document.querySelector("section");
 				section.innerHTML = data;
-				let playList = new PlayList(this.app, this, e.target);
+				let playList = new PlayList(this.app, this, e.id);
 			}
 		})
 	}
@@ -580,23 +598,26 @@ class Library {
 }
 
 class PlayList {
-	constructor(app, library, playList) {
+	constructor(app, library, playListNum) {
 		this.app = app;
 		this.library = library;
-		this.playList = playList;
+		this.playListNum = playListNum;
 
-		this.musicRecommendation = document.querySelector(".music-recommendation")
-
+		this.musicRecommendation = document.querySelector(".music-recommendation > div");
+		this.musicRecommendationP = document.querySelector(".music-recommendation > p");
 		this.innerList();
 	}
 
 	innerList() {
-		let music = document.createElement("div");
-		let musicData = `<div>
-							<img src="./covers/RECIPE.jpg" alt="">
-							<p><span>열애중</span><br>
-							벤</p>
-						</div>`;
+		this.musicRecommendationP.innerHTML = `${this.app.playList[this.playListNum][0]} (노래 - <span>${this.app.playList[this.playListNum][1].length}</span>)`
+		this.app.playList[this.playListNum][1].forEach(data=>{
+			let music = document.createElement("div");
+			let musicData = `<img src="./covers/${data.albumImage}" alt="">
+							<p><span>${data.name}</span><br>
+							${data.artist}</p>`;
+			music.innerHTML =  musicData;
+			this.musicRecommendation.appendChild(music);
+		})
 	}
 }
 

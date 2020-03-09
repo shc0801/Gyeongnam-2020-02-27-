@@ -40,6 +40,7 @@ class App {
 		this.playListMenu = document.querySelector("#playListMenu");
 		this.newPlayList = document.querySelector(".newPlayList");
 		this.newplayListForm = document.querySelector(".newplayListForm");
+		this.playBtn = document.querySelectorAll(".play-btn > i");
 		this.playListCloseBtn = document.querySelector(".fa-close");
 		this.playListInput = document.querySelector("#playListInput");
 		this.addPlayList = document.querySelector(".addPlayList");
@@ -66,22 +67,22 @@ class App {
 		});
 	}
 
-	// loading() {
-	// 	var loader = $(".loading-form");
-	// 	var section = $("section");
-	// 	loader.css("display","none");
-	// 	section.css("display","block");
-	// }
- 
-	getDuration(dataUrl) {
-		return new Promise((res, rej)=>{
-			let audio = new Audio();
-			audio.src = `/B/m/${dataUrl}`;
-			audio.addEventListener("loadeddata", ()=>{
-				res(audio.duration);
-			})
-		})
+	loading() {
+		var loader = $(".loading-form");
+		var section = $("section");
+		loader.css("display","none");
+		section.css("display","block");
 	}
+ 
+	// getDuration(dataUrl) {
+	// 	return new Promise((res, rej)=>{
+	// 		let audio = new Audio();
+	// 		audio.src = `/B/m/${dataUrl}`;
+	// 		audio.addEventListener("loadeddata", ()=>{
+	// 			res(audio.duration);
+	// 		})
+	// 	})
+	// }
 	
 	addEvent(){ 
 
@@ -110,6 +111,18 @@ class App {
 				this.musicList.forEach(list=>{
 					if(list.idx === e.currentTarget.classList[0]) this.nowMusic = list
 				})
+			})
+		})
+
+		this.playBtn.forEach(btn=>{
+			btn.addEventListener("click", (e)=>{
+				this.musicList.forEach(list=>{
+					if(list.idx === e.currentTarget.parentNode.parentNode.classList[0]) this.nowMusic = list
+				})
+				this.queueList = new Array;
+				this.queueList.push(this.nowMusic)
+				this.beMusicList = true;
+				this.Audio.src = `/B/m/${this.queueList[0].url}`;
 			})
 		})
 
@@ -262,7 +275,7 @@ class Player {
 		this.timeBar = document.querySelector("#time-bar");
 
 		this.forwardBtn = document.querySelector(".fa-step-forward");
-		this.playCircleBtn = document.querySelector(".fa-play");
+		this.playCircleBtn = document.querySelector(".music-player-top > .fa-play");
 		this.stopCircleBtn = document.querySelector(".fa-pause");
 		this.backwardBtn = document.querySelector(".fa-step-backward");
 		this.soundinput = document.querySelector("#sound-set");
@@ -340,6 +353,7 @@ class Player {
 		// 재생
 		this.playCircleBtn.addEventListener("click", ()=>{
 			if(!this.app.beMusicList) return;
+			console.log("Asd")
 			this.play();
 		})
 		// 일시정지
@@ -351,10 +365,13 @@ class Player {
 		this.forwardBtn.addEventListener("click", ()=>{
 			if(!this.app.beMusicList) return;
 			this.app.playNum++;
+			if(this.repeatType == 'queue-repeat' && this.app.queueList.length == this.app.playNum) {
+				this.app.playNum = 0;
+			}
 			if(this.app.queueList.length == this.app.playNum) {
 				this.app.playNum = this.app.queueList.length - 1;
 				return;
-			}
+			} 
 			this.app.Audio.src = `/B/m/${this.app.queueList[this.app.playNum].url}`;
 			this.pause();
 			this.viewLyrics();
@@ -378,7 +395,7 @@ class Player {
 
 		// 반목재생
 		this.repeatBtn.addEventListener("click", ()=>{
-			// if(!this.app.beMusicList) return;
+			if(!this.app.beMusicList) return;
 			if(this.repeatBtn.value == '반복안함') {
 				this.repeatBtn.value = '음악반복';
 				this.repeatType = 'one-repeat';
@@ -669,6 +686,7 @@ class Library {
 	}
 
 	innerSectionPlayListData() {
+		this.musicPlayListMain.innerHTML = '';
 		this.app.playList.forEach((playList, i)=>{
 			let list = document.createElement("div");
 			list.id = i;
@@ -793,7 +811,65 @@ class Library {
 				})
 			} else if(e.target.classList[0] === 'add-play-lists') {
 				this.app.playListInput.value = '';
-				this.app.viewPlayListMenu(e);
+				
+				this.app.playListMenu.style.top = e.pageY + "px";
+				this.app.playListMenu.style.left = e.pageX + "px";
+				this.app.playListMenu.style.display = 'block';
+				this.app.addPlayList.innerHTML = '';
+				this.app.playList.forEach(list=>{
+					let playList = document.createElement("div");
+					let listData = `<div class="playList"><input type="checkbox" name="addPlayListButton" id="${list[0]}" class="addPlayListButton">${list[0]}</div>`;
+					list[1].forEach(data=>{
+						if(data == this.nowMusic) {
+							listData = `<div class="playList"><input type="checkbox" name="addPlayListButton" id="${list[0]}" class="addPlayListButton" checked>${list[0]}</div>`;
+						}
+					})
+					playList.innerHTML = listData;
+					this.app.addPlayList.appendChild(playList)
+				})
+
+				this.addPlayListButton = document.querySelectorAll(".addPlayListButton");
+
+				this.addPlayListButton.forEach((btn, i)=>{
+					btn.addEventListener("change", (e)=>{
+						if(e.target.checked) {
+							let is = false;
+							this.app.playList.forEach(playList=>{
+								if(playList[0] == this.app.playList[this.playListNum][0]) {
+									playList[1].forEach(music=>{
+										if(music == this.nowMusic)
+											is = true;
+									})
+								}
+							})
+							this.app.playList.forEach(playList=>{
+								if(playList[0] == this.app.playList[this.playListNum][0]) {
+									playList[1].forEach(music=>{
+										if(!is) {
+											let tf = true
+											this.app.playList[i][1].forEach(data=>{
+												if(data === music) {
+													tf = false;
+												}
+											})
+											if(tf)
+												this.app.playList[i][1].push(music)
+										}
+									})
+								}
+							})
+						} else {
+							this.app.playList.forEach(playList=>{
+								if(playList[0] == this.app.playList[this.playListNum][0]) {
+									playList[1].forEach(music=>{
+										this.app.playList[i][1].splice(this.app.playList[i][1].indexOf(music), 1)
+									})
+								}
+							})
+						}
+						this.innerSectionPlayListData();
+					})
+				})
 			}
 		})
 	}
@@ -856,7 +932,7 @@ class PlayList {
 			this.app.playList.forEach(playList=>{
 				playList[1].forEach(music=>{
 					this.app.queueList.forEach(queue=>{
-						if(music == queue) isMusic = true
+						if(music == queue) isMusic = true;
 					})
 				})
 
@@ -916,4 +992,3 @@ class PlayList {
 window.addEventListener("load", e =>{
 	let app = new App();
 });
-

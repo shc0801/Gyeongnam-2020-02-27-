@@ -287,6 +287,17 @@ nav {
 /* section */
 
 section { width: 75%; height: 1000px; float: right; margin: 120px 30px 0 0; padding: 40px 0 0 80px; z-index: -1;}
+.play-btn { 
+    position: absolute;
+    top: 55%;
+    left: 40%;
+
+    font-size: 30px;
+    color: rgb(255, 89, 89);
+
+    display: none;
+    cursor: pointer;
+}
 .music > p { font-size: 1.3em; font-weight: bold; }
 .music > div { 
     width: 100%; 
@@ -313,7 +324,8 @@ section { width: 75%; height: 1000px; float: right; margin: 120px 30px 0 0; padd
     box-shadow: 5px 5px 25px -10px;
     transition: transform .5s; transform: scale(1);
 }
-.music > div > div:hover { transform: scale(1.05);}
+.music > div > div:hover { transform: scale(1.05); display: block;}
+.music > div > div:hover .play-btn { transform: scale(1.05); display: block;}
 .music > div > div > p { width: 100%; height: 30%; padding-left: 10px; }
 .music > div > div > p > span { font-size: 1.3em; font-weight: bold; }
 .music > div > div > img { width: 100%; }

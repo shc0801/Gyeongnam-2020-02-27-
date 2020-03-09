@@ -27,6 +27,12 @@ class App {
 		let player= new Player(this);
 		this.Audio = new Audio;
 
+		this.declaration();
+        
+        this.init();
+	}
+	
+	declaration() {
 		this.page = document.querySelectorAll(".page");
 
 		// dom
@@ -40,9 +46,7 @@ class App {
 		this.addPlayListBtn = document.querySelector("#addPlayListBtn")
 		this.addPlayListButton = null;
 		this.musicCard = document.querySelectorAll(".music > div > div");
-        
-        this.init();
-    }
+	}
 
     init() {
 		new Promise((res,rej)=>{
@@ -95,7 +99,11 @@ class App {
 
 		this.musicCard.forEach(music=>{
 			music.addEventListener("contextmenu", (e)=>{
+				this.contextmenu.innerHTML = `<div class="add-play-list contextmenu">플레이리스트 추가</div>
+											  <div class="next-music-play contextmenu">다음 음악으로 재생</div>
+											  <div class="add-queue contextmenu">대기열 추가</div>`;
 				event.preventDefault();
+				this.contextmenu.style.height = '180px';
 				this.contextmenu.style.top = e.pageY + "px";
 				this.contextmenu.style.left = e.pageX + "px";
 				this.contextmenu.style.display = 'block';
@@ -106,8 +114,7 @@ class App {
 		})
 
 		this.contextmenu.addEventListener("click", (e)=>{
-			if(e.target.classList[0] === "add-play-list") {					
-				if(this.queueList.indexOf(this.nowMusic) != -1) return;
+			if(e.target.classList[0] === "add-play-list") {				
 				this.playListInput.value = '';
 				this.viewPlayListMenu(e);
 			} else if(e.target.classList[0] === "next-music-play") {
@@ -160,6 +167,9 @@ class App {
 					let queue = new Queue(this);
 				} else if(page.classList[2] === 'Library') {
 					let library = new Library(this);
+				} else if(page.classList[2] === 'Home') {
+					this.declaration();
+					this.addEvent()
 				}
 			}
 		})
@@ -226,8 +236,13 @@ class App {
 				this.queueList.push(this.nowMusic)
 			}
 		} else {
-			this.queueList.splice(this.playNum + 1, 0, this.nowMusic);
-			console.log(this.queueList)
+			let isMusic = true;
+			this.queueList.forEach(list=>{
+				if(list == this.nowMusic)  isMusic = false;
+			})
+			if(isMusic)
+				this.queueList.splice(this.playNum + 1, 0, this.nowMusic);
+			isMusic = true;
 		}
 	}
 }
@@ -252,6 +267,9 @@ class Player {
 		this.backwardBtn = document.querySelector(".fa-step-backward");
 		this.soundinput = document.querySelector("#sound-set");
 		this.soundPercent = document.querySelector(".sound-percent");
+		this.repeatBtn = document.querySelector("#repeat-btn");
+
+		this.repeatType = 'none';
 
 		this.lyrics = {
 			startTime: new Array,
@@ -281,13 +299,25 @@ class Player {
 
 			if(this.app.Audio.currentTime == this.app.Audio.duration) {
 				this.pause();
-				if(this.app.playNum != this.app.queueList.length - 1) {
+				if(this.repeatType == 'one-repeat') {
+					this.app.Audio.currentTime = 0;
+					this.viewLyrics();
+					this.play();
+				}
+				else if(this.app.playNum != this.app.queueList.length - 1) {
 					this.app.playNum++;
 					this.app.Audio.src = `/B/m/${this.app.queueList[this.app.playNum].url}`;
 					this.app.Audio.currentTime = 0;
 					this.viewLyrics();
 					this.play();
-				}	
+				} else if(this.repeatType == 'queue-repeat') {
+					this.app.playNum = 0;
+					this.app.Audio.src = `/B/m/${this.app.queueList[this.app.playNum].url}`;
+					this.app.Audio.currentTime = 0;
+					this.viewLyrics();
+					this.play();
+				}
+				this.lyricsNum = 0; 
 			}
 
 			this.lyricsScroll();
@@ -297,6 +327,11 @@ class Player {
 
 			var val = $('input[type=range]').val();
 			$('input[type=range]').css('background', 'linear-gradient(to right, #ff8888 0%, #ff8888 '+ val +'%, #e4e4e4 ' + val + '%, #e4e4e4 ' + $('input[type=range]')[0].max + '%)');
+		} else {
+			this.coverImg.innerHTML = `<img src="" alt="">`
+			this.musicText.innerHTML = ``
+			this.nowTime.innerHTML = `0:00`
+			this.allTime.innerHTML = `0:00`
 		}
 		requestAnimationFrame(e => this.player());
 	}
@@ -341,6 +376,21 @@ class Player {
 			}
 		})
 
+		// 반목재생
+		this.repeatBtn.addEventListener("click", ()=>{
+			// if(!this.app.beMusicList) return;
+			if(this.repeatBtn.value == '반복안함') {
+				this.repeatBtn.value = '음악반복';
+				this.repeatType = 'one-repeat';
+			} else if(this.repeatBtn.value == '음악반복') {
+				this.repeatBtn.value = '대기열반복';
+				this.repeatType = 'queue-repeat';
+			} else if(this.repeatBtn.value == '대기열반복') {
+				this.repeatBtn.value = '반복안함';
+				this.repeatType = 'none';
+			}
+		})
+
 		// 재생기록 저장
 		this.app.Audio.addEventListener("loadeddata", ()=>{
 			this.app.historyList.push(this.app.queueList[this.app.playNum]);
@@ -377,7 +427,7 @@ class Player {
 		}
 	}
 
-	//재생
+	// 재생
 	play() {
 		this.app.Audio.play();
 		this.playCircleBtn.style.display = "none";
@@ -385,7 +435,7 @@ class Player {
 		this.lyrics.bool = true;
 	}
 
-	//일시정지
+	// 일시정지
 	pause() {
 		this.app.Audio.pause();
 		this.playCircleBtn.style.display = "block";
@@ -485,33 +535,61 @@ class Queue {
 		this.app = app;
 		
 		this.queueMain = document.querySelector(".music-queue-list-main");
-		// this.queueList = {
-		// 	title: queueList[0],
-		// 	artist: queueList[1],
-		// 	albumName: queueList[2],
-		// 	runTime: queueList[3],
-		// }
 		this.listNum = 0;
 		this.init();
 	}
 
 	init() {
+		if(this.app.queueList.length === 0) return;
 		this.innerList();
 		this.frame();
+		this.addEvent();
 	}
  
 	innerList() {
+		this.queueMain.innerHTML = '';
 		this.app.queueList.forEach(queue=>{
 			let list = document.createElement("div");
+			list.id = queue.idx;
+			list.classList.add("queue-music");
 			let listData = `<img id="music-queue-list-cover" src="./covers/${queue.albumImage}" alt="">
 							<div class="music-queue-list-title">${queue.name}</div>
 							<div class="music-queue-list-artist">${queue.artist}</div>
-							<div class="music-queue-list-pathos">${queue.albumName}</div>
-							<div class="music-queue-list-run-time">${queue.duration.time()}</div>`;
+							<div class="music-queue-list-pathos">${queue.albumName}</div>`;
+							// <div class="music-queue-list-run-time">${queue.duration.time()}</div>`;
 			list.innerHTML = listData;
 			this.queueMain.appendChild(list)
 		})
 		this.highDiv = document.querySelectorAll(".music-queue-list-main > div");
+		this.queueMusic = document.querySelectorAll(".queue-music");
+	}
+
+	addEvent() {
+		this.queueMusic.forEach(music=>{
+			music.addEventListener("contextmenu", (e)=>{
+				this.app.contextmenu.innerHTML = `<div class="add-play-list contextmenu">플레이리스트 추가</div>
+											  <div class="delete-queue contextmenu">대기열에서 삭제</div>`;
+				event.preventDefault();
+				this.app.contextmenu.style.height = '120px';
+				this.app.contextmenu.style.top = e.pageY + "px";
+				this.app.contextmenu.style.left = e.pageX + "px";
+				this.app.contextmenu.style.display = 'block';
+				
+				this.app.musicList.forEach(list=>{
+					if(list.idx === e.currentTarget.id) this.app.nowMusic = list;
+				})
+			})
+		})
+
+		this.app.contextmenu.addEventListener("click", (e)=>{
+			if(e.target.classList[0] === "add-play-list") {				
+				this.app.playListInput.value = '';
+				this.app.viewPlayListMenu(e);
+			} else if(e.target.classList[0] === "delete-queue") {		
+				this.deleteQueue();
+				this.app.beMusicList = false;
+			}
+		})
 	}
 	
 	highLight() {
@@ -521,7 +599,13 @@ class Queue {
 		this.highDiv[this.app.playNum].style.border = "2px solid rgb(255, 90, 90)";
 	}
 
+	deleteQueue() {
+		this.app.queueList.splice(this.app.queueList.indexOf(this.app.playNum),1);
+		this.innerList();
+	}
+
 	frame() {
+		if(this.app.queueList.length == 0) return;
 		this.highLight();
 		
 		requestAnimationFrame(e => this.frame());
@@ -536,45 +620,92 @@ class Library {
 		this.musicPlayListMain = document.querySelector(".music-play-list-main");
 
 		this.init();
+		this.addEvent();
 	}
 
 	init() {
 		this.frame();
-		if(this.app.playList.length != 0) {
+		if(this.app.historyList.length != 0) {
 			this.innerSectionHistoryData();
-			this.innerSectionPlayListData();
 		}
+		if(this.app.playList.length != 0)
+			this.innerSectionPlayListData();
 	}
 
 	innerSectionHistoryData() {
-		// for(let i = this.app.historyList.length - 1; i > this.app.historyList.length - 6; i--) {
-		// 	console.log(this.app.historyList[i])
-		// 	let list = document.createElement("div");
-		// 	let listData = `<img id="music-history-list-cover" src="./covers/${this.app.historyList[i].albumImage}" alt="">
-		// 					<div class="music-history-list-title">${this.app.historyList[i].name}</div>
-		// 					<div class="music-history-list-artist">${this.app.historyList[i].artist}</div>
-		// 					<div class="music-history-list-pathos">${this.app.historyList[i].albumName}</div>`;
-		// 					// <div class="music-history-list-run-time">${this.app.historyList[i].duration.time()}</div>`;
-		// 	list.innerHTML = listData;
-		// 	this.musicHistoryList.appendChild(list)
-		// }
+		for(let i = this.app.historyList.length - 1; i > this.app.historyList.length - 6; i--) {
+			if(i >= 0) {
+				let list = document.createElement("div");
+				list.classList.add("history-music");
+				let listData = `<img id="music-history-list-cover" src="./covers/${this.app.historyList[i].albumImage}" alt="">
+								<div class="music-history-list-title">${this.app.historyList[i].name}</div>
+								<div class="music-history-list-artist">${this.app.historyList[i].artist}</div>
+								<div class="music-history-list-pathos">${this.app.historyList[i].albumName}</div>`;
+								// <div class="music-history-list-run-time">${this.app.historyList[i].duration.time()}</div>`;
+				list.innerHTML = listData;
+				this.musicHistoryList.appendChild(list)
+				this.historyMusic = document.querySelectorAll(".history-music");
+			}
+		}
+
+		this.historyMusic.forEach(music=>{
+			music.addEventListener("contextmenu", (e)=>{
+				this.app.contextmenu.innerHTML = `
+												  <div class="next-music-play contextmenu">재생기록 삭제</div>
+												  <div class="add-play-list contextmenu">플레이리스트 추가</div>
+												  <div class="next-music-play contextmenu">다음 음악으로 재생</div>
+												  <div class="add-queue contextmenu">대기열에 추가</div>`;
+				event.preventDefault();
+				this.app.contextmenu.style.height = '240px';
+				this.app.contextmenu.style.top = e.pageY + "px";
+				this.app.contextmenu.style.left = e.pageX + "px";
+				this.app.contextmenu.style.display = 'block';
+				
+				this.app.musicList.forEach(list=>{
+					if(list.idx === e.currentTarget.id) this.app.nowMusic = list;
+				}) 
+			})
+		})
 	}
 
 	innerSectionPlayListData() {
 		this.app.playList.forEach((playList, i)=>{
 			let list = document.createElement("div");
+			list.id = i;
+			list.classList.add("playList-card");
 			let playListData = `
 				<img id="music-play-list-cover" src="./covers/${playList[1][0].albumImage}" alt="">
-				<div class="music-play-list-title"><a id="${i}" class="playListPageBtn ${playList[0]} playlist" href="#"> - ${playList[0]} <span>(${playList[1].length})</span></a></div>`;
+				<div class="music-play-list-title"><a id="${i}" class="playListPageBtn ${playList[0]} playlist" href="#"> - ${playList[0]} <span class="playlist">(${playList[1].length})</span></a></div>`;
 			list.innerHTML = playListData;
 			this.musicPlayListMain.appendChild(list); 
 			this.playListPageBtn = document.querySelectorAll(".playListPageBtn");
-			console.log(this.playListPageBtn)
+
+			this.playListCard = document.querySelectorAll(".playList-card");
 		})
 
 		this.playListPageBtn.forEach(btn=>{
 			btn.addEventListener("click", (e)=>{
 				this.movePage(e.target);
+			})
+		})
+
+		this.playListCard.forEach(music=>{
+			music.addEventListener("contextmenu", (e)=>{
+				this.app.contextmenu.innerHTML = `<div class="play-playList contextmenu">플레이리스트 재생</div>
+												  <div class="add-play-lists contextmenu">플레이리스트에 추가</div>
+												  <div class="next-musics-play contextmenu">다음 음악으로 재생</div>
+												  <div class="add-queues contextmenu">대기열에 추가</div>
+												  <div class="delete-playList contextmenu">플레이리스트 삭제</div>`;
+				event.preventDefault();
+				this.app.contextmenu.style.height = '300px';
+				this.app.contextmenu.style.top = e.pageY - 300 + "px";
+				this.app.contextmenu.style.left = e.pageX + "px";
+				this.app.contextmenu.style.display = 'block';
+				
+				this.app.musicList.forEach(list=>{
+					if(list.idx === e.currentTarget.id) this.app.nowMusic = list;
+				}) 
+				this.playListNum = e.currentTarget.id;
 			})
 		})
 	}
@@ -587,6 +718,82 @@ class Library {
 				let section = document.querySelector("section");
 				section.innerHTML = data;
 				let playList = new PlayList(this.app, this, e.id);
+			}
+		})
+	}
+
+	addEvent() {
+		this.app.contextmenu.addEventListener("click", (e)=>{
+			if(e.target.classList[0] === "add-play-list") {				
+				this.app.playListInput.value = '';
+				this.app.viewPlayListMenu(e);
+			} else if(e.target.classList[0] === "next-musics-play") {
+				if(this.app.queueList.length == 0) {				
+					this.app.playList.forEach(playList=>{
+						if(playList[0] == this.app.playList[this.playListNum][0]) {
+							playList[1].forEach(music=>{
+								this.app.queueList.push(music);
+								this.app.beMusicList = true;
+								this.app.Audio.src = `/B/m/${this.app.queueList[0].url}`;
+							})
+						}
+					})
+				} else {
+					let isMusic = false;
+					this.app.playList.forEach(playList=>{
+						if(playList[0] == this.app.playList[this.playListNum][0]) {
+							playList[1].forEach(music=>{
+								this.app.queueList.forEach(queue=>{
+									if(music == queue) isMusic = true
+								})
+							})
+							if(!isMusic) {
+								playList[1].forEach((music, i)=>{
+									this.app.queueList.splice(this.app.playNum + i + 1, 0, music);
+								})
+							}
+						}
+					})
+				}
+			} else if(e.target.classList[0] === "add-queues") {				
+				let isMusic = false;
+				this.app.playList.forEach(playList=>{
+					if(playList[0] == this.app.playList[this.playListNum][0]) {
+						playList[1].forEach(music=>{
+							this.app.queueList.forEach(queue=>{
+								if(music == queue) isMusic = true
+							})
+						})
+						if(!isMusic) {
+							playList[1].forEach(music=>{
+								console.log(music)
+								this.app.queueList.push(music);
+								this.app.beMusicList = true;
+								this.app.Audio.src = `/B/m/${this.app.queueList[0].url}`;
+							})
+						}
+					}
+				})
+			} else if(e.target.classList[0] === 'delete-playList') {
+				this.app.playList.splice(this.playListNum,1);
+				this.musicPlayListMain.innerHTML = ``;
+				if(this.app.playList.length != 0) {
+					this.innerSectionPlayListData();
+				}
+			} else if(e.target.classList[0] === 'play-playList') {
+				this.app.queueList = new Array;
+				this.app.playList.forEach(playList=>{
+					if(playList[0] == this.app.playList[this.playListNum][0]) {
+						playList[1].forEach(music=>{
+							this.app.queueList.push(music);
+							this.app.beMusicList = true;
+							this.app.Audio.src = `/B/m/${this.app.queueList[0].url}`;
+						})
+					}
+				})
+			} else if(e.target.classList[0] === 'add-play-lists') {
+				this.app.playListInput.value = '';
+				this.app.viewPlayListMenu(e);
 			}
 		})
 	}
@@ -605,18 +812,103 @@ class PlayList {
 
 		this.musicRecommendation = document.querySelector(".music-recommendation > div");
 		this.musicRecommendationP = document.querySelector(".music-recommendation > p");
+		this.allPlay = document.querySelector(".all-play");
+		this.addPlay = document.querySelector(".add-play");
+
 		this.innerList();
+		this.addEvent();
 	}
 
 	innerList() {
+		this.musicRecommendation.innerHTML = ``;
 		this.musicRecommendationP.innerHTML = `${this.app.playList[this.playListNum][0]} (노래 - <span>${this.app.playList[this.playListNum][1].length}</span>)`
 		this.app.playList[this.playListNum][1].forEach(data=>{
 			let music = document.createElement("div");
+			music.id = data.idx;
+			music.classList.add("playList-card")
 			let musicData = `<img src="./covers/${data.albumImage}" alt="">
 							<p><span>${data.name}</span><br>
 							${data.artist}</p>`;
 			music.innerHTML =  musicData;
 			this.musicRecommendation.appendChild(music);
+		})
+
+		this.playListMusic = document.querySelectorAll(".playList-card");
+	}
+
+	addEvent() {
+		this.allPlay.addEventListener("click", ()=>{
+			this.app.queueList = new Array;
+			this.app.playList.forEach(playList=>{
+				console.log(playList[0], this.app.playList[this.playListNum][0])
+				if(playList[0] == this.app.playList[this.playListNum][0]) {
+					playList[1].forEach(music=>{
+						this.app.queueList.push(music);
+						this.app.beMusicList = true;
+						this.app.Audio.src = `/B/m/${this.app.queueList[0].url}`;
+					})
+				}
+			})
+		})
+
+		this.addPlay.addEventListener("click", ()=>{
+			let isMusic = false;
+			this.app.playList.forEach(playList=>{
+				playList[1].forEach(music=>{
+					this.app.queueList.forEach(queue=>{
+						if(music == queue) isMusic = true
+					})
+				})
+
+				if(!isMusic) {
+					playList[1].forEach(music=>{
+						this.app.queueList.push(music);
+						this.app.beMusicList = true;
+						this.app.Audio.src = `/B/m/${this.app.queueList[0].url}`;
+					})
+				}
+			})
+		})
+
+		this.playListMusic.forEach(music=>{
+			music.addEventListener("contextmenu", (e)=>{
+				this.app.contextmenu.innerHTML = `<div class="add-play-list contextmenu">플레이리스트 추가</div>
+												  <div class="next-music-play contextmenu">다음 음악으로 재생</div>
+												  <div class="add-queue contextmenu">대기열에 추가</div>
+												  <div class="delete-playList contextmenu">플레이리스트 삭제</div>`;
+				event.preventDefault();
+				this.app.contextmenu.style.height = '240px';
+				this.app.contextmenu.style.top = e.pageY + "px";
+				this.app.contextmenu.style.left = e.pageX + "px";
+				this.app.contextmenu.style.display = 'block';
+				
+				this.app.musicList.forEach(list=>{
+					if(list.idx === e.currentTarget.id) this.app.nowMusic = list;
+				}) 
+			})
+		})
+
+		this.app.contextmenu.addEventListener("click", (e)=>{
+			if(e.target.classList[0] === "add-play-list") {				
+				this.app.playListInput.value = '';
+				this.app.viewPlayListMenu(e);
+			} else if(e.target.classList[0] === "next-music-play") {
+				this.app.nextPlay();
+			} else if(e.target.classList[0] === "add-queue") {				
+				if(this.app.queueList.indexOf(this.app.nowMusic) != -1) return;
+				if(!this.app.beMusicList) {
+					this.app.queueList.push(this.app.nowMusic)
+					this.app.beMusicList = true;
+					this.app.Audio.src = `/B/m/${this.app.queueList[0].url}`;
+				} else {
+					this.app.queueList.push(this.app.nowMusic)
+				}
+			} else if(e.target.classList[0] === 'delete-playList') {
+				this.app.playList.forEach(playList=>{
+					playList[1].splice(playList[1].indexOf(this.app.nowMusic),1);
+				})
+				this.innerList();
+			}
 		})
 	}
 }

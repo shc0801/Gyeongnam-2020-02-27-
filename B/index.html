@@ -15,9 +15,7 @@
 </head>
 <body>
     <div id="contextmenu">
-        <div class="add-play-list contextmenu">플레이리스트 추가</div>
-        <div class="next-music-play contextmenu">다음 음악으로 재생</div>
-        <div class="add-queue contextmenu">대기열 추가</div>
+        
     </div>
     <div id="playListMenu">
         <div class="addPlayList">
@@ -28,7 +26,7 @@
         <div class="newplayListForm" style="display: none;">
             이름
             <input id="playListInput" type="text" placeholder="재생목록 이름 입력">
-            <button id="addPlayListBtn">재생목록 추가</button>
+            <button id="addPlayListBtn">확인</button>
         </div>
         <div class="closePlayList">
             <i class="fa fa-close"></i>
@@ -262,7 +260,7 @@
                 <i class="fa fa-play"></i>
                 <i class="fa fa-pause"></i>
                 <i class="fa fa-step-forward"></i>
-                <i class="fa fa-repeat"></i>
+                <input id="repeat-btn" type="button" value="반복안함">
             </div>
             <div class="music-player-bottom">
                 <div class="view-lyrics-btn">가사보기</div>
